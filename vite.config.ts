@@ -6,6 +6,8 @@ const port = 4173;
 
 export default defineConfig({
   plugins: [react()],
+  // Binary data such as src/data/pole-numbers.bin is imported with ?inline.
+  assetsInclude: ["**/*.bin"],
   server: { port, strictPort: true },
   preview: { port, strictPort: true },
   test: { include: ["src/**/*.test.ts"], passWithNoTests: true },

@@ -7,25 +7,29 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p scripts",
     "lint": "oxlint",
     "fmt": "oxfmt",
     "fmt:check": "oxfmt --check",
     "test": "vitest run",
     "check": "pnpm fmt:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build",
+    "data:pole-numbers": "tsx scripts/sample-pole-numbers.ts",
     "prepare": "lefthook install"
   },
   "dependencies": {
+    "proj4": "^2.22.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0"
   },
   "devDependencies": {
+    "@types/node": "^24.13.6",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.1",
     "lefthook": "^2.1.14",
     "oxfmt": "^0.70.0",
     "oxlint": "^1.85.0",
+    "tsx": "^4.23.15",
     "typescript": "^7.0.2",
     "vite": "^8.3.1",
     "vitest": "^5.0.2"
