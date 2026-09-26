@@ -1,3 +1,5 @@
+import path from "node:path";
+import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vitest/config";
 
@@ -5,7 +7,8 @@ import { defineConfig } from "vitest/config";
 const port = 4173;
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), tailwindcss()],
+  resolve: { alias: { "@": path.resolve(import.meta.dirname, "src") } },
   // Binary data such as src/data/pole-numbers.bin is imported with ?inline.
   assetsInclude: ["**/*.bin"],
   server: { port, strictPort: true },

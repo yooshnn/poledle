@@ -1,0 +1,115 @@
+@import "tailwindcss";
+
+/* Paperlogy (SIL OFL) from the noonnu CDN; only the weights the UI uses. */
+@font-face {
+  font-family: "Paperozi";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-4Regular.woff2")
+    format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Paperozi";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-6SemiBold.woff2")
+    format("woff2");
+  font-weight: 600;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Paperozi";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-7Bold.woff2")
+    format("woff2");
+  font-weight: 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Paperozi";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-8ExtraBold.woff2")
+    format("woff2");
+  font-weight: 800;
+  font-display: swap;
+}
+
+@theme {
+  --font-sans: "Paperozi", system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, monospace;
+
+  /* Layout: mobile first, the split layout starts at md. */
+  --breakpoint-2xs: 22.5625rem; /* 361px */
+  --breakpoint-xs: 26.9375rem; /* 431px */
+  --breakpoint-md: 47.5625rem; /* 761px */
+  --breakpoint-xl: 87.5rem; /* 1400px */
+
+  /* Surfaces */
+  --color-canvas: #f5f3ec;
+  --color-bar: #f8f6ef;
+  --color-paper: #faf8f1;
+  --color-card: #fffdf6;
+  --color-map: #dbe6e5;
+  --color-line: #d9ded4;
+  --color-line-soft: #e1e5da;
+
+  /* Text */
+  --color-ink: #293d37;
+  --color-ink-strong: #263f35;
+  --color-body: #61705e;
+  --color-muted: #718274;
+  --color-faint: #a1a396;
+
+  /* Brand */
+  --color-forest: #375b46;
+  --color-forest-dark: #294b36;
+  --color-forest-soft: #e8f0e5;
+  --color-leaf: #356e54;
+  --color-slate: #8a9184;
+  --color-copper: #b86635;
+  --color-copper-dark: #9e5128;
+  --color-rust: #b97748;
+  --color-warn: #9c653c;
+  --color-focus: #d08045;
+
+  --animate-rise-in: rise-in 0.3s ease-out both;
+  --animate-submit-pulse: submit-pulse 1.8s ease-out infinite;
+
+  @keyframes rise-in {
+    from {
+      opacity: 0;
+      transform: translateY(18px);
+    }
+  }
+  @keyframes submit-pulse {
+    0% {
+      box-shadow: 0 0 0 0 #b8663566;
+    }
+    70%,
+    100% {
+      box-shadow: 0 0 0 9px #b8663500;
+    }
+  }
+}
+
+@layer base {
+  html {
+    font-synthesis: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply bg-canvas font-sans text-[14px] leading-[normal] text-ink;
+  }
+  button:not(:disabled) {
+    cursor: pointer;
+  }
+  :focus-visible {
+    outline: 3px solid var(--color-focus);
+    outline-offset: 3px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
