@@ -1,6 +1,5 @@
-import { BLOCK_SIZE, CELL_SIZE, MAX_GUESSES, SQUARE_SIZE, type Precision } from "./constants";
+import { BLOCK_SIZE, MAX_GUESSES, type Precision } from "./constants";
 import { cellCenter, sameRegion, type Cell } from "./cell";
-import type { Puzzle } from "./daily";
 import { locationCode } from "./pole-number";
 import type { LngLat } from "./projection";
 
@@ -57,22 +56,6 @@ export function hintLabel(square: Cell, size: 50 | 500 | 2000, guesses: Cell[]):
   const blockY = guessedHere || guesses.length >= 5 ? code.slice(2, 4) : "??";
   const visibleLength = { 2000: 4, 500: 5, 50: 7 }[size];
   return blockX + blockY + code.slice(4, visibleLength);
-}
-
-// Spoiler-free result: one row per guess, closest grid level reached.
-export function shareText(puzzle: Puzzle, guesses: Cell[], answers: Cell[]): string {
-  const target: Target = { answers, precision: CELL_SIZE };
-  const status = gameStatus(guesses, target);
-  const rows: string[] = guesses.map((guess) => {
-    if (isCorrect(guess, target)) return "🟩";
-    if (answers.some((answer) => sameRegion(guess, answer, SQUARE_SIZE))) return "🟨";
-    if (answers.some((answer) => sameRegion(guess, answer, BLOCK_SIZE))) return "🟥";
-    return "⬛";
-  });
-  if (status === "won") rows.push(...Array<string>(MAX_GUESSES - rows.length).fill("🟩"));
-
-  const score = status === "won" ? guesses.length : "X";
-  return `전봇들 #${puzzle.number} · ${puzzle.date}\n${score}/${MAX_GUESSES}\n\n${rows.join("\n")}`;
 }
 
 const EARTH_RADIUS_METERS = 6_371_000;

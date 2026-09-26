@@ -1,11 +1,12 @@
 import { AnswerCandidates } from "@/components/result/answer-candidates";
-import { ShareButton } from "@/components/result/share-button";
+import { ShareButtons } from "@/components/result/share-button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Eyebrow } from "@/components/ui/eyebrow";
 import { sameCell, type Cell } from "@/domain/cell";
 import { CELL_SIZE } from "@/domain/constants";
 import type { Puzzle } from "@/domain/daily";
-import { shareText, type GameStatus } from "@/domain/game";
+import type { GameStatus } from "@/domain/game";
+import { dailyShareText } from "@/domain/share";
 
 type Props = {
   open: boolean;
@@ -14,9 +15,10 @@ type Props = {
   status: GameStatus;
   guesses: Cell[];
   answers: Cell[];
+  streak: number;
 };
 
-export function ResultDialog({ open, onClose, puzzle, status, guesses, answers }: Props) {
+export function ResultDialog({ open, onClose, puzzle, status, guesses, answers, streak }: Props) {
   // Start on the answer the player found, if any.
   const foundIndex = answers.findIndex((answer) =>
     guesses.some((guess) => sameCell(guess, answer)),
@@ -39,7 +41,7 @@ export function ResultDialog({ open, onClose, puzzle, status, guesses, answers }
           initialIndex={Math.max(0, foundIndex)}
         />
 
-        <ShareButton text={shareText(puzzle, guesses, answers)} />
+        <ShareButtons text={dailyShareText(puzzle, guesses, answers, streak)} />
       </DialogContent>
     </Dialog>
   );

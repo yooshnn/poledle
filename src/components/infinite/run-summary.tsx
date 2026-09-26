@@ -1,10 +1,11 @@
 import { RotateCcw } from "lucide-react";
 import { AnswerCandidates } from "@/components/result/answer-candidates";
-import { ShareButton } from "@/components/result/share-button";
+import { ShareButtons } from "@/components/result/share-button";
 import { Button } from "@/components/ui/button";
 import { Eyebrow } from "@/components/ui/eyebrow";
 import type { Cell } from "@/domain/cell";
-import { DIFFICULTIES, INFINITE_TITLE, infiniteShareText, type RunEnd } from "@/domain/infinite";
+import { DIFFICULTIES, INFINITE_TITLE, type RunEnd } from "@/domain/infinite";
+import { infiniteShareText } from "@/domain/share";
 import type { InfiniteRun } from "@/game/infinite-run";
 import { EndCredits } from "./end-credits";
 import { PAGE_BODY } from "./layout";
@@ -59,7 +60,7 @@ export function RunSummary({
         </p>
         <AnswerCandidates answers={answers} precision={precision} knownRegions={run.regions} />
 
-        <ShareButton text={infiniteShareText(run.difficulty, score)} />
+        <ShareButtons text={infiniteShareText(run.difficulty, score, end)} />
         <div className="mt-2 flex items-center justify-between">
           <Button variant="quiet" onClick={onChangeDifficulty}>
             난이도 바꾸기

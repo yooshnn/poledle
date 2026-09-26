@@ -60,9 +60,11 @@ test("an Infinite run: rounds, resuming, giving up and the end screen", async ({
     await expect(summary.getByText(/포기했어요/)).toBeVisible();
     await expect(page.getByTestId("end-credits")).toContainText("서울특별시 중구 명동");
 
-    await summary.getByRole("button", { name: "결과 공유하기" }).click();
+    await summary.getByRole("button", { name: "결과 복사하기" }).click();
     const shared = await page.evaluate(() => navigator.clipboard.readText());
-    expect(shared).toBe("전봇들 Infinite · Normal\n1문제 연속 정답");
+    expect(shared).toBe(
+      "어디까지 전봇들 챌린지 · Normal\n1문제 연속 정답 🏳️\n#전봇들 https://poledle.cupya.me/infinite",
+    );
 
     // Region names were stored while playing; the end screen looks nothing up.
     expect(await page.evaluate(() => window.fakeNaverMaps.geocodeCount())).toBe(lookups);

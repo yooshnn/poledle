@@ -78,6 +78,7 @@ export function DailyPage() {
         status={game.status}
         guesses={game.guesses.map((guess) => guess.cell)}
         answers={game.revealedAnswers}
+        streak={game.streak}
       />
     </PageShell>
   );

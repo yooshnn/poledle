@@ -69,11 +69,15 @@ test("a lost daily game: hints, guess details, hard mode, reload and sharing", a
   });
 
   await test.step("the shared result hides the pole number", async () => {
-    await page.getByRole("button", { name: "결과 공유하기" }).click();
+    await page.getByRole("button", { name: "결과 복사하기" }).click();
     const shared = await page.evaluate(() => navigator.clipboard.readText());
     expect(shared).toContain("전봇들 #3");
     expect(shared).toContain("X/6");
     expect(shared).not.toContain(await player.puzzleCode());
+    await expect(page.getByRole("link", { name: "X에 공유하기" })).toHaveAttribute(
+      "href",
+      /^https:\/\/x\.com\/intent\/tweet\?text=/,
+    );
   });
 });
 

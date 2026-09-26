@@ -3,7 +3,8 @@ import { poleNumbers } from "../data/pole-numbers";
 import { answerCells, isOnLand } from "./answers";
 import { cellCenter, cellKey, snapToCell, type Cell } from "./cell";
 import { dailyPuzzle, koreaDate } from "./daily";
-import { hintLabel, shareText } from "./game";
+import { hintLabel } from "./game";
+import { dailyShareText } from "./share";
 import { locationCode, parsePoleNumber } from "./pole-number";
 import { gridBase, toTM } from "./projection";
 
@@ -81,9 +82,20 @@ describe("hints and sharing", () => {
       { ...documented, x: documented.x - 50 }, // same 500 m square
       documented,
     ];
-    const text = shareText(puzzle, guesses, [documented]);
+    const text = dailyShareText(puzzle, guesses, [documented], 5);
 
-    expect(text.split("\n\n")[1]?.split("\n")).toEqual(["⬛", "🟥", "🟨", "🟩", "🟩", "🟩"]);
+    expect(text.split("\n")).toEqual([
+      "전봇들 #1 4/6 🔥5일",
+      "",
+      "⬛",
+      "🟥",
+      "🟨",
+      "🟩",
+      "🟩",
+      "🟩",
+      "",
+      "#전봇들 https://poledle.cupya.me",
+    ]);
     expect(text).not.toContain("0311");
   });
 });

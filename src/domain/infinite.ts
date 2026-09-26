@@ -53,8 +53,3 @@ export function pickCode(played: string[], random = Math.random): string {
   if (!code) throw new Error("Every pole number has been played");
   return code;
 }
-
-// Spoiler-free: the difficulty and the score only.
-export function infiniteShareText(difficulty: Difficulty, score: number): string {
-  return `전봇들 Infinite · ${DIFFICULTIES[difficulty].label}\n${score}문제 연속 정답`;
-}
