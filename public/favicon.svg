@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Utility pole">
+  <g fill="none" stroke="#1f2937" stroke-linecap="round" stroke-linejoin="round">
+    <!-- pole -->
+    <path d="M16 6V29" stroke-width="3.2"/>
+
+    <!-- crossarm -->
+    <path d="M7 10.5H25" stroke-width="3"/>
+
+    <!-- insulators -->
+    <path d="M10 10.5V7.7M22 10.5V7.7" stroke-width="2"/>
+    <path d="M8.8 7.7H11.2M20.8 7.7H23.2" stroke-width="2"/>
+
+    <!-- wires -->
+    <path d="M1.8 8.2C5.2 9.4 7.3 9.4 10 8.2" stroke-width="1.7"/>
+    <path d="M22 8.2C24.7 9.4 26.8 9.4 30.2 8.2" stroke-width="1.7"/>
+
+    <!-- base -->
+    <path d="M12.8 29H19.2" stroke-width="3.2"/>
+  </g>
+</svg>

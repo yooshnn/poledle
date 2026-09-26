@@ -1,0 +1,10 @@
+pre-commit:
+  parallel: true
+  jobs:
+    - run: pnpm fmt:check
+    - run: pnpm lint
+pre-push:
+  parallel: true
+  jobs:
+    - run: pnpm typecheck
+    - run: pnpm test
