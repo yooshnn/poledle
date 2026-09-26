@@ -9,12 +9,12 @@ import { PuzzleHeader } from "@/components/puzzle/puzzle-header";
 import { PuzzlePanel } from "@/components/puzzle/puzzle-panel";
 import { Button } from "@/components/ui/button";
 import { useDailyGame } from "@/game/use-daily-game";
-import { useHardMode } from "@/game/use-hard-mode";
+import { useSetting } from "@/game/settings";
 import { PageShell } from "./page-shell";
 
 export function DailyPage() {
   const game = useDailyGame();
-  const [hardMode] = useHardMode();
+  const [hardMode] = useSetting("hardMode");
   // A finished game opens straight to its result.
   const [showResult, setShowResult] = useState(game.status !== "playing");
   const [focusRequest, focusGuess] = useGuessFocus();

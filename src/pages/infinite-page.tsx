@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { DIFFICULTIES, INFINITE_TITLE } from "@/domain/infinite";
 import type { InfiniteRun } from "@/game/infinite-run";
 import type { PuzzleGame } from "@/game/puzzle-game";
-import { useHardMode } from "@/game/use-hard-mode";
+import { useSetting } from "@/game/settings";
 import { useInfiniteGame, type InfiniteGame } from "@/game/use-infinite-game";
 import { PageShell } from "./page-shell";
 
@@ -56,7 +56,7 @@ function Round({
 }) {
   const [focusRequest, focusGuess] = useGuessFocus();
   const [confirmingGiveUp, setConfirmingGiveUp] = useState(false);
-  const [hardMode] = useHardMode();
+  const [hardMode] = useSetting("hardMode");
   const { label, showHints } = DIFFICULTIES[run.difficulty];
   const won = game.status === "won";
   const roundNumber = run.found.length + (won ? 0 : 1);

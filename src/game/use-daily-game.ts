@@ -5,6 +5,7 @@ import type { Cell } from "../domain/cell";
 import { CELL_SIZE } from "../domain/constants";
 import { dailyPuzzle, koreaDate } from "../domain/daily";
 import { addGuess, gameStatus, type GameStatus, type Target } from "../domain/game";
+import { guessEffect, playEffect } from "../sound";
 import { describeGuesses, type Notice, type PuzzleGame } from "./puzzle-game";
 import { loadStore, updateStore } from "./storage";
 import { recordResult, visibleStreak, type Streak } from "./streak";
@@ -56,7 +57,10 @@ export function useDailyGame() {
 
   const feedback = useMemo(() => describeGuesses(guesses, target), [guesses, target]);
 
-  const select = useCallback((cell: Cell) => dispatch({ type: "select", cell }), []);
+  const select = useCallback((cell: Cell) => {
+    playEffect("select");
+    dispatch({ type: "select", cell });
+  }, []);
 
   const submit = useCallback((): GameStatus | null => {
     if (!selected) return null;
@@ -73,6 +77,7 @@ export function useDailyGame() {
       return { ...store, games: { ...store.games, [date]: result.guesses }, streak: nextStreak };
     });
     dispatch({ type: "guessed", guesses: result.guesses, streak: nextStreak, saved });
+    playEffect(guessEffect(nextStatus));
     return nextStatus;
   }, [target, date, guesses, selected, state.streak]);
 

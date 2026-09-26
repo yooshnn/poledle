@@ -3,11 +3,15 @@ import { isValidCell, type Cell } from "../domain/cell";
 import { emptyInfiniteRecord, parseInfiniteRecord, type InfiniteRecord } from "./infinite-run";
 import { noStreak, type Streak } from "./streak";
 
+// Player preferences. Sound is on unless turned off.
+export type Settings = { hardMode: boolean; effects: boolean; ambience: boolean };
+const defaultSettings: Settings = { hardMode: false, effects: true, ambience: true };
+
 // Everything the app remembers, in one localStorage entry.
 export type Store = {
   // Guesses per puzzle date (YYYY-MM-DD), in the order they were made.
   games: Record<string, Cell[]>;
-  hardMode: boolean;
+  settings: Settings;
   streak: Streak;
   infinite: InfiniteRecord;
 };
@@ -17,7 +21,7 @@ const SCHEMA_VERSION = 1;
 
 const emptyStore = (): Store => ({
   games: {},
-  hardMode: false,
+  settings: defaultSettings,
   streak: noStreak,
   infinite: emptyInfiniteRecord(),
 });
@@ -45,7 +49,7 @@ export function updateStore(change: (store: Store) => Store): boolean {
 
 function parseStore(data: unknown): Store {
   if (typeof data !== "object" || data === null) return emptyStore();
-  const { version, games, hardMode, streak, infinite } = data as Record<string, unknown>;
+  const { version, games, settings, streak, infinite } = data as Record<string, unknown>;
   if (version !== SCHEMA_VERSION) return emptyStore();
 
   const validGames: Record<string, Cell[]> = {};
@@ -58,10 +62,20 @@ function parseStore(data: unknown): Store {
   }
   return {
     games: validGames,
-    hardMode: hardMode === true,
+    settings: parseSettings(settings),
     streak: parseStreak(streak),
     infinite: parseInfiniteRecord(infinite),
   };
+}
+
+function parseSettings(data: unknown): Settings {
+  if (typeof data !== "object" || data === null) return defaultSettings;
+  const settings = { ...defaultSettings };
+  for (const name of Object.keys(settings) as (keyof Settings)[]) {
+    const value = (data as Record<string, unknown>)[name];
+    if (typeof value === "boolean") settings[name] = value;
+  }
+  return settings;
 }
 
 function parseStreak(data: unknown): Streak {

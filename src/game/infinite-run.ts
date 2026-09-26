@@ -132,6 +132,10 @@ export function endRun(record: InfiniteRecord, end: RunEnd): InfiniteRecord {
   };
 }
 
+// Whether a change raised any best score, i.e. a run just ended on a new record.
+export const beatsBest = (before: InfiniteRecord, after: InfiniteRecord) =>
+  DIFFICULTY_ORDER.some((difficulty) => after.best[difficulty] > before.best[difficulty]);
+
 export type RunGuessResult =
   | { ok: true; record: InfiniteRecord; status: GameStatus }
   | { ok: false; reason: Notice };

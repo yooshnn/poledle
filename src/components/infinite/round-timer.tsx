@@ -1,7 +1,10 @@
 import { useEffect, useEffectEvent, useState } from "react";
 import { cn } from "@/lib/utils";
+import { playEffect } from "@/sound";
 
 const WARNING_MS = 30_000;
+// Seconds left at which a tick sounds every second.
+const TICKING_FROM = 10;
 const TICK_MS = 250;
 
 // Time left in the round as m:ss. Always computed from the deadline, so throttled timers in
@@ -23,6 +26,10 @@ export function RoundTimer({ deadline, onTimeout }: { deadline: number; onTimeou
   const remaining = Math.max(0, deadline - now);
   const seconds = Math.ceil(remaining / 1000);
   const text = `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
+
+  useEffect(() => {
+    if (seconds > 0 && seconds <= TICKING_FROM) playEffect("tick");
+  }, [seconds]);
 
   return (
     <span

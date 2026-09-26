@@ -3,7 +3,6 @@ import { HelpDialog } from "@/components/dialogs/help-dialog";
 import { ModesDialog } from "@/components/dialogs/modes-dialog";
 import { SettingsDialog } from "@/components/dialogs/settings-dialog";
 import { Header, type HeaderStat } from "@/components/header/header";
-import { useHardMode } from "@/game/use-hard-mode";
 
 type Panel = "help" | "settings" | "modes" | null;
 
@@ -19,7 +18,6 @@ export function PageShell({
 }) {
   const [panel, setPanel] = useState<Panel>(null);
   const closePanel = () => setPanel(null);
-  const [hardMode, setHardMode] = useHardMode();
 
   return (
     <>
@@ -32,12 +30,7 @@ export function PageShell({
       />
       {children}
       <HelpDialog open={panel === "help"} onClose={closePanel} />
-      <SettingsDialog
-        open={panel === "settings"}
-        onClose={closePanel}
-        hardMode={hardMode}
-        onHardModeChange={setHardMode}
-      />
+      <SettingsDialog open={panel === "settings"} onClose={closePanel} />
       <ModesDialog open={panel === "modes"} onClose={closePanel} />
     </>
   );

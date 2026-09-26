@@ -3,10 +3,11 @@ import { answerCells } from "../domain/answers";
 import { cellKey, type Cell } from "../domain/cell";
 import { CELL_SIZE } from "../domain/constants";
 import { gameStatus, type GameStatus, type Target } from "../domain/game";
-import { DIFFICULTIES, roundDeadline, type Difficulty } from "../domain/infinite";
+import { DIFFICULTIES, roundDeadline, type Difficulty, type RunEnd } from "../domain/infinite";
 import { lookupRegion } from "../map/reverse-geocode";
 import {
   activeRun,
+  beatsBest,
   closeRun,
   endRun,
   guessInRun,
@@ -17,6 +18,7 @@ import {
   withRegion,
   type InfiniteRecord,
 } from "./infinite-run";
+import { guessEffect, playEffect } from "../sound";
 import { describeGuesses, type Notice, type PuzzleGame } from "./puzzle-game";
 import { loadStore, updateStore } from "./storage";
 
@@ -69,9 +71,16 @@ export function useInfiniteGame() {
   const deadline = run ? roundDeadline(run.round.startedAt) : 0;
   const isOver = (now: number) => status === "playing" && now >= deadline;
 
+  // Ending a run sounds like a loss, or a fanfare when it beats the best score.
+  function finish(end: RunEnd) {
+    const next = endRun(record, end);
+    playEffect(beatsBest(record, next) ? "record" : "lose");
+    save(next);
+  }
+
   // Called by the round timer; the clock is also checked on submit.
   function timeOut() {
-    if (run && !run.end && isOver(Date.now())) save(endRun(record, "timeout"));
+    if (run && !run.end && isOver(Date.now())) finish("timeout");
   }
 
   function submit(): GameStatus | null {
@@ -85,6 +94,7 @@ export function useInfiniteGame() {
       setNotice(result.reason);
       return null;
     }
+    playEffect(beatsBest(record, result.record) ? "record" : guessEffect(result.status));
     save(result.record);
     return result.status;
   }
@@ -104,6 +114,7 @@ export function useInfiniteGame() {
     selected,
     notice,
     select: (cell) => {
+      playEffect("select");
       setSelected(cell);
       setNotice(null);
     },
@@ -122,7 +133,7 @@ export function useInfiniteGame() {
     retry: (difficulty: Difficulty) => save(startRun(record, difficulty, Date.now())),
     next: () => save(nextRound(record, Date.now())),
     suspend: () => save(suspendRun(record, Date.now())),
-    giveUp: () => save(endRun(record, "gave-up")),
+    giveUp: () => finish("gave-up"),
     timeOut,
     close: () => save(closeRun(record)),
   };

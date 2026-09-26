@@ -49,7 +49,7 @@ test("a lost daily game: hints, guess details, hard mode, reload and sharing", a
 
   await test.step("hard mode hides hints and can be turned on mid-game", async () => {
     await page.getByRole("button", { name: "설정 열기" }).click();
-    await page.getByRole("switch").click();
+    await page.getByRole("switch", { name: /어려운 모드/ }).click();
     await page.keyboard.press("Escape");
     await expect(page.getByText("정답은 여기서")).toBeHidden();
     await expect(page.getByText("????")).toHaveCount(0);
