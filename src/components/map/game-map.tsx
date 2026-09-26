@@ -1,6 +1,6 @@
 import { useMemo } from "react";
-import { cellKey } from "@/domain/cell";
-import type { DailyGame } from "@/game/use-daily-game";
+import { cellKey, regionCorner } from "@/domain/cell";
+import type { PuzzleGame } from "@/game/puzzle-game";
 import { NaverMap } from "@/map/naver-map";
 import { CellMarker, CellPolygon } from "@/map/overlays";
 import { AnswerLayer } from "./answer-layer";
@@ -19,14 +19,15 @@ const SELECTION_PIN =
 // Whole-country map: pick cells, see past guesses and hints, and the answers once finished.
 export function GameMap({
   game,
-  hardMode,
+  showHints,
   focusRequest,
 }: {
-  game: DailyGame;
-  hardMode: boolean;
+  game: PuzzleGame;
+  showHints: boolean;
   focusRequest: FocusRequest | null;
 }) {
   const status = useNaverMaps();
+  const { precision } = game;
   const done = game.status !== "playing";
   const guessCells = useMemo(() => game.guesses.map((guess) => guess.cell), [game.guesses]);
 
@@ -39,25 +40,30 @@ export function GameMap({
       className={FRAME}
     >
       <ZoomControls />
-      <SelectionLayer onSelect={game.select} disabled={done} />
-      <GridHints guesses={guessCells} hidden={hardMode || done} />
+      <SelectionLayer precision={precision} onSelect={game.select} disabled={done} />
+      <GridHints guesses={guessCells} precision={precision} hidden={!showHints || done} />
       {game.guesses.map((guess, index) => (
         <GuessMarker
           key={cellKey(guess.cell)}
           guess={guess}
           index={index}
-          code={game.puzzle.code}
-          hardMode={hardMode}
+          code={game.code}
+          precision={precision}
+          showHints={showHints}
           focusRequest={focusRequest}
         />
       ))}
       {game.selected && !done && (
         <>
-          <CellPolygon cell={game.selected} style={SELECTED_STYLE} />
+          <CellPolygon
+            cell={regionCorner(game.selected, precision)}
+            size={precision}
+            style={SELECTED_STYLE}
+          />
           <CellMarker cell={game.selected} html={SELECTION_PIN} size={28} zIndex={200} />
         </>
       )}
-      {done && <AnswerLayer cells={game.revealedAnswers} />}
+      {done && <AnswerLayer cells={game.revealedAnswers} precision={precision} />}
     </NaverMap>
   );
 }

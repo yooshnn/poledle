@@ -40,6 +40,16 @@ export function sameRegion(a: Cell, b: Cell, size: number): boolean {
   );
 }
 
+// South-west corner of the grid square of the given size that contains the cell.
+export function regionCorner(cell: Cell, size: number): Cell {
+  const base = gridBase(cell.origin);
+  return {
+    origin: cell.origin,
+    x: base.x + Math.floor((cell.x - base.x) / size) * size,
+    y: base.y + Math.floor((cell.y - base.y) / size) * size,
+  };
+}
+
 export function snapToCell(position: LngLat): Cell {
   const origin = originAt(position.lng);
   const base = gridBase(origin);

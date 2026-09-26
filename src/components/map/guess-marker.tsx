@@ -1,15 +1,29 @@
 /// <reference types="navermaps" />
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { NaverMapLink } from "@/components/map/naver-map-link";
+import { regionCorner } from "@/domain/cell";
+import { CODE_DIGITS, type Precision } from "@/domain/constants";
 import { locationCode } from "@/domain/pole-number";
-import type { GuessFeedback } from "@/game/use-daily-game";
+import type { GuessFeedback } from "@/game/puzzle-game";
 import { cn } from "@/lib/utils";
 import { cellLatLng, detach, safely, useNaverMap } from "@/map/naver-map";
 import { CellPolygon } from "@/map/overlays";
 import { useAddress } from "@/map/use-address";
+import { ZOOM } from "./zoom";
 
 export type FocusRequest = { index: number; version: number };
+
+// Attempt slots ask the map to show a guess. Bumping the version re-focuses the same guess
+// when its slot is clicked again.
+export function useGuessFocus(): [FocusRequest | null, (index: number) => void] {
+  const [request, setRequest] = useState<FocusRequest | null>(null);
+  const focus = useCallback(
+    (index: number) => setRequest((previous) => ({ index, version: (previous?.version ?? 0) + 1 })),
+    [],
+  );
+  return [request, focus];
+}
 
 const PIN_CLASS =
   "box-border grid size-[30px] place-items-center rounded-full border-2 text-xs leading-none font-bold";
@@ -22,13 +36,15 @@ export function GuessMarker({
   guess,
   index,
   code,
-  hardMode,
+  precision,
+  showHints,
   focusRequest,
 }: {
   guess: GuessFeedback;
   index: number;
   code: string;
-  hardMode: boolean;
+  precision: Precision;
+  showHints: boolean;
   focusRequest: FocusRequest | null;
 }) {
   const map = useNaverMap();
@@ -77,22 +93,25 @@ export function GuessMarker({
   useEffect(() => {
     if (focusRequest?.index !== index || !popup.current) return;
     map.setCenter(cellLatLng({ origin, x, y }));
-    map.setZoom(18, false);
+    map.setZoom(ZOOM[precision].focus, false);
     popup.current.info.open(map, popup.current.marker);
-  }, [focusRequest, index, map, origin, x, y]);
+  }, [focusRequest, index, map, origin, x, y, precision]);
 
-  // The guessed cell's 7-character location code, marking characters shared with the answer.
-  const characters = [...locationCode(cell)].map((char, position) => ({
+  // As much of the guessed cell's location code as the puzzle asks for, marking characters
+  // shared with the answer.
+  const guessedCode = locationCode(cell).slice(0, CODE_DIGITS[precision]);
+  const characters = [...guessedCode].map((char, position) => ({
     id: `${position}`,
     char,
-    matches: !hardMode && char === code[position],
+    matches: showHints && char === code[position],
   }));
   const address = useAddress(cell);
 
   return (
     <>
       <CellPolygon
-        cell={cell}
+        cell={regionCorner(cell, precision)}
+        size={precision}
         style={{ color: correct ? "#277661" : "#787a73", weight: 2, fillOpacity: 0.12 }}
       />
       {createPortal(
@@ -119,7 +138,7 @@ export function GuessMarker({
           <div className="border-t border-[#e8ebe2] pt-2 text-[11px] leading-normal break-words text-[#68776a]">
             {address ?? "주소 조회 중…"}
           </div>
-          {!hardMode && direction && (
+          {showHints && direction && (
             <div className="mt-2 text-[10px] text-[#778579]">
               정답은 여기서 <b className="text-xs font-semibold text-[#4a6753]">{direction}쪽</b>
             </div>

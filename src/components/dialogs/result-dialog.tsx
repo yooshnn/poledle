@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Eyebrow } from "@/components/ui/eyebrow";
 import { cellKey, sameCell, type Cell } from "@/domain/cell";
+import { CELL_SIZE } from "@/domain/constants";
 import type { Puzzle } from "@/domain/daily";
 import { shareText, type GameStatus } from "@/domain/game";
 import { useAddress } from "@/map/use-address";
@@ -55,7 +56,7 @@ export function ResultDialog({ open, onClose, puzzle, status, guesses, answers }
 
         {active && (
           <>
-            <AnswerMap cell={active} />
+            <AnswerMap cell={active} precision={CELL_SIZE} />
             <AnswerDetail cell={active} />
           </>
         )}

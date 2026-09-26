@@ -2,22 +2,12 @@ import { useCallback, useMemo, useReducer } from "react";
 import { puzzleSchedule } from "../config";
 import { answerCells } from "../domain/answers";
 import type { Cell } from "../domain/cell";
+import { CELL_SIZE } from "../domain/constants";
 import { dailyPuzzle, koreaDate } from "../domain/daily";
-import {
-  addGuess,
-  directionToNearestAnswer,
-  gameStatus,
-  isCorrect,
-  type Direction,
-  type GameStatus,
-} from "../domain/game";
+import { addGuess, gameStatus, type GameStatus, type Target } from "../domain/game";
+import { describeGuesses, type Notice, type PuzzleGame } from "./puzzle-game";
 import { loadStore, updateStore } from "./storage";
 import { recordResult, visibleStreak, type Streak } from "./streak";
-
-// Why the last action did not go through; the UI turns it into a message.
-export type Notice = "already-guessed" | "game-over" | "storage-unavailable";
-
-export type GuessFeedback = { cell: Cell; correct: boolean; direction: Direction | null };
 
 type State = {
   date: string;
@@ -60,32 +50,22 @@ export function useDailyGame() {
 
   const puzzle = useMemo(() => dailyPuzzle(date, puzzleSchedule), [date]);
   const answers = useMemo(() => answerCells(puzzle.code), [puzzle]);
-  const status = gameStatus(guesses, answers);
+  // Daily asks for the exact 50 m cell.
+  const target = useMemo<Target>(() => ({ answers, precision: CELL_SIZE }), [answers]);
+  const status = gameStatus(guesses, target);
 
-  const feedback = useMemo<GuessFeedback[]>(
-    () =>
-      guesses.map((cell) => {
-        const correct = isCorrect(cell, answers);
-        return {
-          cell,
-          correct,
-          direction: correct ? null : directionToNearestAnswer(cell, answers),
-        };
-      }),
-    [guesses, answers],
-  );
+  const feedback = useMemo(() => describeGuesses(guesses, target), [guesses, target]);
 
   const select = useCallback((cell: Cell) => dispatch({ type: "select", cell }), []);
 
-  // Returns the game status after the guess, or null when nothing was submitted.
   const submit = useCallback((): GameStatus | null => {
     if (!selected) return null;
-    const result = addGuess(guesses, selected, answers);
+    const result = addGuess(guesses, selected, target);
     if (!result.ok) {
       dispatch({ type: "rejected", reason: result.reason });
       return null;
     }
-    const nextStatus = gameStatus(result.guesses, answers);
+    const nextStatus = gameStatus(result.guesses, target);
     // Read the streak from storage, not state: another tab may have recorded a newer result.
     let nextStreak = state.streak;
     const saved = updateStore((store) => {
@@ -94,20 +74,20 @@ export function useDailyGame() {
     });
     dispatch({ type: "guessed", guesses: result.guesses, streak: nextStreak, saved });
     return nextStatus;
-  }, [answers, date, guesses, selected, state.streak]);
+  }, [target, date, guesses, selected, state.streak]);
 
-  return {
-    puzzle,
+  const game: PuzzleGame = {
+    code: puzzle.code,
+    precision: target.precision,
     status,
     guesses: feedback,
-    // Answers stay hidden from the UI until the game is over.
     revealedAnswers: status === "playing" ? [] : answers,
     selected,
     notice: state.notice,
-    streak: visibleStreak(state.streak, date),
     select,
     submit,
   };
+  return { ...game, puzzle, streak: visibleStreak(state.streak, date) };
 }
 
 export type DailyGame = ReturnType<typeof useDailyGame>;

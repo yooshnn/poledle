@@ -1,27 +1,32 @@
-import { BLOCK_SIZE, MAX_GUESSES, SQUARE_SIZE } from "./constants";
-import { cellCenter, sameCell, sameRegion, type Cell } from "./cell";
+import { BLOCK_SIZE, CELL_SIZE, MAX_GUESSES, SQUARE_SIZE, type Precision } from "./constants";
+import { cellCenter, sameRegion, type Cell } from "./cell";
 import type { Puzzle } from "./daily";
 import { locationCode } from "./pole-number";
 import type { LngLat } from "./projection";
 
 export type GameStatus = "playing" | "won" | "lost";
 
-export function gameStatus(guesses: Cell[], answers: Cell[]): GameStatus {
-  if (guesses.some((guess) => isCorrect(guess, answers))) return "won";
+// What a puzzle asks for: any of the answer cells, matched down to the given grid level.
+// Guesses are always the 50 m cell the player picked; a coarser precision only widens the match.
+export type Target = { answers: Cell[]; precision: Precision };
+
+export function gameStatus(guesses: Cell[], target: Target): GameStatus {
+  if (guesses.some((guess) => isCorrect(guess, target))) return "won";
   return guesses.length >= MAX_GUESSES ? "lost" : "playing";
 }
 
-export function isCorrect(guess: Cell, answers: Cell[]): boolean {
-  return answers.some((answer) => sameCell(answer, guess));
+export function isCorrect(guess: Cell, { answers, precision }: Target): boolean {
+  return answers.some((answer) => sameRegion(answer, guess, precision));
 }
 
 export type GuessResult =
   | { ok: true; guesses: Cell[] }
   | { ok: false; reason: "game-over" | "already-guessed" };
 
-export function addGuess(guesses: Cell[], cell: Cell, answers: Cell[]): GuessResult {
-  if (gameStatus(guesses, answers) !== "playing") return { ok: false, reason: "game-over" };
-  if (guesses.some((guess) => sameCell(guess, cell)))
+export function addGuess(guesses: Cell[], cell: Cell, target: Target): GuessResult {
+  if (gameStatus(guesses, target) !== "playing") return { ok: false, reason: "game-over" };
+  // Two picks in the same grid square are the same guess.
+  if (guesses.some((guess) => sameRegion(guess, cell, target.precision)))
     return { ok: false, reason: "already-guessed" };
   return { ok: true, guesses: [...guesses, cell] };
 }
@@ -56,9 +61,10 @@ export function hintLabel(square: Cell, size: 50 | 500 | 2000, guesses: Cell[]):
 
 // Spoiler-free result: one row per guess, closest grid level reached.
 export function shareText(puzzle: Puzzle, guesses: Cell[], answers: Cell[]): string {
-  const status = gameStatus(guesses, answers);
+  const target: Target = { answers, precision: CELL_SIZE };
+  const status = gameStatus(guesses, target);
   const rows: string[] = guesses.map((guess) => {
-    if (isCorrect(guess, answers)) return "🟩";
+    if (isCorrect(guess, target)) return "🟩";
     if (answers.some((answer) => sameRegion(guess, answer, SQUARE_SIZE))) return "🟨";
     if (answers.some((answer) => sameRegion(guess, answer, BLOCK_SIZE))) return "🟥";
     return "⬛";

@@ -1,13 +1,19 @@
 import { CircleQuestionMark, Menu, Settings2, UtilityPole } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link } from "@/lib/router";
+
+// The mode badge shows one headline number, such as the Daily streak.
+export type HeaderStat = { label: string; value: string };
 
 export function Header({
-  streak,
+  mode,
+  stat,
   onOpenHelp,
   onOpenSettings,
   onOpenModes,
 }: {
-  streak: number;
+  mode: string;
+  stat: HeaderStat;
   onOpenHelp: () => void;
   onOpenSettings: () => void;
   onOpenModes: () => void;
@@ -15,25 +21,25 @@ export function Header({
   return (
     <header className="flex h-[58px] items-center justify-between border-b border-line bg-bar px-3 2xs:px-[18px] md:h-[78px] md:px-9">
       <div className="flex min-w-0 items-center gap-2.5 md:gap-5">
-        <a
-          href="/"
+        <Link
+          to="/"
           aria-label="전봇들 홈"
           className="flex items-center gap-2 text-xl font-extrabold tracking-[-1px] text-ink-strong md:gap-3 md:text-[23px]"
         >
           <UtilityPole aria-hidden="true" className="size-[27px] stroke-[1.6] md:size-8" />
           전봇들
-        </a>
+        </Link>
         <div className="grid gap-0.5 border-l border-line pl-2.5 md:gap-[3px] md:pl-[18px]">
           <span className="flex items-center gap-2 text-[8px] tracking-[1px] md:text-[10px] md:tracking-[2px]">
             <span className="size-1.5 rounded-full bg-[#678871]" />
-            DAILY
+            {mode}
           </span>
           <span
-            aria-label={`연속 정답 ${streak}일`}
+            aria-label={`${stat.label} ${stat.value}`}
             className="flex items-baseline gap-1.5 text-[10px] whitespace-nowrap text-[#708074] xs:text-[11px]"
           >
-            연속 정답
-            <strong className="text-xs text-forest xs:text-[13px]">{streak}일</strong>
+            {stat.label}
+            <strong className="text-xs text-forest xs:text-[13px]">{stat.value}</strong>
           </span>
         </div>
       </div>

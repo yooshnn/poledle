@@ -1,18 +1,22 @@
+import type { ReactNode } from "react";
 import { ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const HIDDEN = "invisible translate-y-7 opacity-0 pointer-events-none";
 
-// Floating control over the map: a prompt until a cell is selected, then the submit button.
+// Floating control over the map: a prompt until a cell is selected, then the submit button,
+// and once the puzzle is over whatever the mode offers next (if anything).
 export function GuessAction({
   hasSelection,
   done,
   onSubmit,
+  doneAction,
 }: {
   hasSelection: boolean;
   done: boolean;
   onSubmit: () => void;
+  doneAction?: ReactNode;
 }) {
   const showPrompt = !done && !hasSelection;
   const showButton = !done && hasSelection;
@@ -43,6 +47,7 @@ export function GuessAction({
         제출하기
         <ArrowUpRight aria-hidden="true" />
       </Button>
+      {done && doneAction && <div className={layer}>{doneAction}</div>}
     </div>
   );
 }

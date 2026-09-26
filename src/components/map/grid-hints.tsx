@@ -1,9 +1,9 @@
 /// <reference types="navermaps" />
 import { useEffect } from "react";
-import { BLOCK_SIZE, CELL_SIZE, SQUARE_SIZE } from "@/domain/constants";
-import { cellCorners, snapToCell, type Cell } from "@/domain/cell";
+import { BLOCK_SIZE, CELL_SIZE, SQUARE_SIZE, type Precision } from "@/domain/constants";
+import { cellCorners, regionCorner, snapToCell, type Cell } from "@/domain/cell";
 import { hintLabel } from "@/domain/game";
-import { gridBase, toLngLat } from "@/domain/projection";
+import { toLngLat } from "@/domain/projection";
 import { cellPath, detach, safely, toLatLng, useNaverMap } from "@/map/naver-map";
 
 // Labels closer than this (in pixels) would overlap, so no hints are drawn at that zoom.
@@ -12,16 +12,25 @@ const MIN_LABEL_SPACING_PX = 110;
 const LABEL_CLASS =
   "pointer-events-none font-mono text-[13px] leading-[22px] font-semibold whitespace-nowrap text-[#171c19] [paint-order:stroke_fill] [-webkit-text-stroke:3px_#fff]";
 
-// Grid squares get finer as wrong guesses accumulate, but only once zoomed in far enough.
-function hintSize(guessCount: number, zoom: number): 50 | 500 | 2000 {
-  if (guessCount >= 3 && zoom >= 18) return CELL_SIZE;
-  if (guessCount >= 2 && zoom >= 15) return SQUARE_SIZE;
+// Grid squares get finer as wrong guesses accumulate, but only once zoomed in far enough,
+// and never finer than the grid level the puzzle asks for.
+function hintSize(guessCount: number, zoom: number, precision: Precision): Precision {
+  if (precision <= CELL_SIZE && guessCount >= 3 && zoom >= 18) return CELL_SIZE;
+  if (precision <= SQUARE_SIZE && guessCount >= 2 && zoom >= 15) return SQUARE_SIZE;
   return BLOCK_SIZE;
 }
 
 // After a wrong guess, outlines the 3×3 grid squares around the map centre and labels each
 // with the pole number prefix it stands for (see hintLabel). Redrawn whenever the map settles.
-export function GridHints({ guesses, hidden }: { guesses: Cell[]; hidden: boolean }) {
+export function GridHints({
+  guesses,
+  precision,
+  hidden,
+}: {
+  guesses: Cell[];
+  precision: Precision;
+  hidden: boolean;
+}) {
   const map = useNaverMap();
 
   useEffect(() => {
@@ -33,15 +42,9 @@ export function GridHints({ guesses, hidden }: { guesses: Cell[]; hidden: boolea
       clear();
       if (hidden || guesses.length === 0) return;
 
-      const size = hintSize(guesses.length, map.getZoom());
+      const size = hintSize(guesses.length, map.getZoom(), precision);
       const center = map.getCenter() as naver.maps.LatLng;
-      const centerCell = snapToCell({ lng: center.lng(), lat: center.lat() });
-      const base = gridBase(centerCell.origin);
-      const square: Cell = {
-        origin: centerCell.origin,
-        x: base.x + Math.floor((centerCell.x - base.x) / size) * size,
-        y: base.y + Math.floor((centerCell.y - base.y) / size) * size,
-      };
+      const square = regionCorner(snapToCell({ lng: center.lng(), lat: center.lat() }), size);
 
       const projection = map.getProjection();
       const [southWest, southEast] = cellCorners(square, size).map((corner) =>
@@ -95,7 +98,7 @@ export function GridHints({ guesses, hidden }: { guesses: Cell[]; hidden: boolea
       safely(() => Event.removeListener(listener));
       clear();
     };
-  }, [map, guesses, hidden]);
+  }, [map, guesses, precision, hidden]);
 
   return null;
 }

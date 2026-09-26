@@ -1,7 +1,7 @@
 import { Check, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MAX_GUESSES } from "@/domain/constants";
-import type { GuessFeedback } from "@/game/use-daily-game";
+import type { GuessFeedback } from "@/game/puzzle-game";
 
 const SLOT =
   "grid size-7 place-items-center rounded border md:size-[30px] [&_svg]:size-3.5 [&_svg]:stroke-[2.5]";
