@@ -3,15 +3,10 @@ import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vitest/config";
 
-// 4173 is registered as a Web service URL for the NAVER Maps application, so dev and preview share it.
-const port = 4173;
-
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: { alias: { "@": path.resolve(import.meta.dirname, "src") } },
   // Binary data such as src/data/pole-numbers.bin is imported with ?inline.
   assetsInclude: ["**/*.bin"],
-  server: { port, strictPort: true },
-  preview: { port, strictPort: true },
   test: { include: ["src/**/*.test.ts"], passWithNoTests: true },
 });

@@ -9,6 +9,7 @@ export default defineConfig({
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? "github" : "list",
   use: {
+    // vite preview's default port.
     baseURL: "http://localhost:4173",
     trace: "retain-on-failure",
   },
