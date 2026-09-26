@@ -14,7 +14,7 @@ export function PageShell({
   children,
 }: {
   mode: string;
-  stat: HeaderStat;
+  stat: HeaderStat | null;
   children: ReactNode;
 }) {
   const [panel, setPanel] = useState<Panel>(null);

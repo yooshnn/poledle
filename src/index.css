@@ -70,11 +70,22 @@
 
   --animate-rise-in: rise-in 0.3s ease-out both;
   --animate-submit-pulse: submit-pulse 1.8s ease-out infinite;
+  /* The duration is set per list by EndCredits. */
+  --animate-credits-roll: credits-roll 60s linear infinite;
 
   @keyframes rise-in {
     from {
       opacity: 0;
       transform: translateY(18px);
+    }
+  }
+  /* From just below the frame until the last line leaves the top (cqh: the frame's height). */
+  @keyframes credits-roll {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(calc(-100% - 100cqh));
     }
   }
   @keyframes submit-pulse {

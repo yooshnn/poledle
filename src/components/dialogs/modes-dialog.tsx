@@ -1,11 +1,12 @@
 import { cn } from "@/lib/utils";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Eyebrow } from "@/components/ui/eyebrow";
+import { INFINITE_TITLE } from "@/domain/infinite";
 import { Link, useRoute, type Route } from "@/lib/router";
 
 const MODES: { name: string; description: string; route: Route | null }[] = [
   { name: "Daily", description: "데일리 전봇들", route: "/" },
-  { name: "Infinite", description: "어디까지 전봇들 챌린지", route: null },
+  { name: "Infinite", description: INFINITE_TITLE, route: "/infinite" },
   { name: "Lesson", description: "번호 읽는 법 익히기", route: null },
 ];
 

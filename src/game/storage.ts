@@ -1,5 +1,6 @@
 import { MAX_GUESSES } from "../domain/constants";
 import { isValidCell, type Cell } from "../domain/cell";
+import { emptyInfiniteRecord, parseInfiniteRecord, type InfiniteRecord } from "./infinite-run";
 import { noStreak, type Streak } from "./streak";
 
 // Everything the app remembers, in one localStorage entry.
@@ -8,12 +9,18 @@ export type Store = {
   games: Record<string, Cell[]>;
   hardMode: boolean;
   streak: Streak;
+  infinite: InfiniteRecord;
 };
 
 const STORAGE_KEY = "poledle";
 const SCHEMA_VERSION = 1;
 
-const emptyStore = (): Store => ({ games: {}, hardMode: false, streak: noStreak });
+const emptyStore = (): Store => ({
+  games: {},
+  hardMode: false,
+  streak: noStreak,
+  infinite: emptyInfiniteRecord(),
+});
 
 // Missing, unreadable or foreign data yields an empty store; storage is never required to play.
 export function loadStore(): Store {
@@ -38,7 +45,7 @@ export function updateStore(change: (store: Store) => Store): boolean {
 
 function parseStore(data: unknown): Store {
   if (typeof data !== "object" || data === null) return emptyStore();
-  const { version, games, hardMode, streak } = data as Record<string, unknown>;
+  const { version, games, hardMode, streak, infinite } = data as Record<string, unknown>;
   if (version !== SCHEMA_VERSION) return emptyStore();
 
   const validGames: Record<string, Cell[]> = {};
@@ -49,7 +56,12 @@ function parseStore(data: unknown): Store {
       }
     }
   }
-  return { games: validGames, hardMode: hardMode === true, streak: parseStreak(streak) };
+  return {
+    games: validGames,
+    hardMode: hardMode === true,
+    streak: parseStreak(streak),
+    infinite: parseInfiniteRecord(infinite),
+  };
 }
 
 function parseStreak(data: unknown): Streak {

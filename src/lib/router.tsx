@@ -2,7 +2,7 @@ import { useSyncExternalStore, type ComponentProps, type MouseEvent } from "reac
 
 // Two pages, no router library: the path is read from the History API.
 // Hosts serve index.html for every path (SPA fallback), so unknown paths are rewritten to "/".
-const ROUTES = ["/"] as const;
+const ROUTES = ["/", "/infinite"] as const;
 export type Route = (typeof ROUTES)[number];
 
 const isRoute = (path: string): path is Route => (ROUTES as readonly string[]).includes(path);

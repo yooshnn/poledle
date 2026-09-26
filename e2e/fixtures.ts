@@ -52,6 +52,11 @@ export class Player {
     await this.clickMap(cell);
     await this.page.getByRole("button", { name: "제출하기" }).click();
   }
+
+  async giveUp() {
+    await this.page.getByRole("button", { name: "포기하기" }).click();
+    await this.page.getByRole("button", { name: "판 끝내기" }).click();
+  }
 }
 
 export const test = base.extend<{ player: Player }>({
@@ -78,6 +83,7 @@ declare global {
       zoomTo(zoom: number): void;
       panTo(lat: number, lng: number): void;
       click(lat: number, lng: number): void;
+      geocodeCount(): number;
       failAuthentication(): void;
     };
   }

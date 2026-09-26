@@ -23,7 +23,7 @@ export function SettingsDialog({
               id="hard-mode-description"
               className="text-[11px] leading-[1.6] break-keep text-muted"
             >
-              켜 두는 동안 번호 단서와 정답 방향을 숨깁니다.
+              켜 두는 동안 번호 단서와 정답 방향을 숨깁니다. 모든 모드에 적용돼요.
             </small>
           </span>
           <Switch

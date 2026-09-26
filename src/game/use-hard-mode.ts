@@ -1,8 +1,9 @@
 import { useSyncExternalStore } from "react";
 import { loadStore, updateStore } from "./storage";
 
-// Hard mode hides Daily's hints (grid labels, matching digits, direction). It can be toggled
-// any time. Settings and the Daily page read it separately, so it lives in a small shared store.
+// Hard mode hides hints (grid labels, matching digits, direction) in every mode. It can be
+// toggled any time. Settings and the game pages read it separately, so it lives in a small
+// shared store.
 let hardMode: boolean | undefined;
 const listeners = new Set<() => void>();
 

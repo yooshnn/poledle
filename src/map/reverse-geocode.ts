@@ -5,7 +5,7 @@ import { loadNaverMaps } from "./load-naver-maps";
 // Settlement-level name of a cell (시·도 시·군·구 읍·면·동 리), looked up with the SDK's geocoder
 // submodule. Street addresses are deliberately left out. Resolves to null when NAVER has no
 // region for the point (the sea, for example) and rejects when the lookup itself fails.
-export function regionOf(cell: Cell): Promise<string | null> {
+export function lookupRegion(cell: Cell): Promise<string | null> {
   const key = cellKey(cell);
   let lookup = lookups.get(key);
   if (!lookup) {

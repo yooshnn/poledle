@@ -2,7 +2,7 @@ import { CircleQuestionMark, Menu, Settings2, UtilityPole } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/lib/router";
 
-// The mode badge shows one headline number, such as the Daily streak.
+// The mode badge can show one headline number, such as the Daily streak.
 export type HeaderStat = { label: string; value: string };
 
 export function Header({
@@ -13,7 +13,7 @@ export function Header({
   onOpenModes,
 }: {
   mode: string;
-  stat: HeaderStat;
+  stat: HeaderStat | null;
   onOpenHelp: () => void;
   onOpenSettings: () => void;
   onOpenModes: () => void;
@@ -34,13 +34,15 @@ export function Header({
             <span className="size-1.5 rounded-full bg-[#678871]" />
             {mode}
           </span>
-          <span
-            aria-label={`${stat.label} ${stat.value}`}
-            className="flex items-baseline gap-1.5 text-[10px] whitespace-nowrap text-[#708074] xs:text-[11px]"
-          >
-            {stat.label}
-            <strong className="text-xs text-forest xs:text-[13px]">{stat.value}</strong>
-          </span>
+          {stat && (
+            <span
+              aria-label={`${stat.label} ${stat.value}`}
+              className="flex items-baseline gap-1.5 text-[10px] whitespace-nowrap text-[#708074] xs:text-[11px]"
+            >
+              {stat.label}
+              <strong className="text-xs text-forest xs:text-[13px]">{stat.value}</strong>
+            </span>
+          )}
         </div>
       </div>
       <div className="flex items-center gap-1 2xs:gap-2 xs:gap-3.5 md:gap-[30px]">

@@ -190,9 +190,11 @@
 
   // Every point geocodes to the same region, so tests know what to expect.
   const REGION = ["서울특별시", "중구", "명동", ""];
+  let geocodeCount = 0;
   const Service = {
     Status: { OK: 200, ERROR: 500 },
     reverseGeocode(_options, callback) {
+      geocodeCount++;
       const region = Object.fromEntries(
         REGION.map((name, index) => [`area${index + 1}`, { name }]),
       );
@@ -222,6 +224,7 @@
     zoom: () => liveMap().zoom,
     zoomTo: (zoom) => liveMap().setZoom(zoom),
     panTo: (lat, lng) => liveMap().setCenter(new LatLng(lat, lng)),
+    geocodeCount: () => geocodeCount,
     click: (lat, lng) => Event.trigger(liveMap(), "click", { coord: new LatLng(lat, lng) }),
     failAuthentication: () => {
       const notify = window.navermap_authFailure;
