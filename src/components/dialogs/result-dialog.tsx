@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { ArrowUpRight } from "lucide-react";
+import { AnswerMap } from "@/components/map/answer-map";
+import { NaverMapLink } from "@/components/map/naver-map-link";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Eyebrow } from "@/components/ui/eyebrow";
-import { cellCenter, cellKey, sameCell, type Cell } from "@/domain/cell";
+import { cellKey, sameCell, type Cell } from "@/domain/cell";
 import type { Puzzle } from "@/domain/daily";
 import { shareText, type GameStatus } from "@/domain/game";
+import { useAddress } from "@/map/use-address";
 
 type Props = {
   open: boolean;
@@ -50,9 +53,12 @@ export function ResultDialog({ open, onClose, puzzle, status, guesses, answers }
           ))}
         </div>
 
-        {/* The answer map is added together with the game map. */}
-        <div className="relative h-[200px] overflow-hidden rounded-[7px] border border-[#d5ded3] bg-map md:h-[235px]" />
-        {active && <AnswerDetail cell={active} />}
+        {active && (
+          <>
+            <AnswerMap cell={active} />
+            <AnswerDetail cell={active} />
+          </>
+        )}
 
         <ShareButton text={shareText(puzzle, guesses, answers)} />
       </DialogContent>
@@ -61,12 +67,13 @@ export function ResultDialog({ open, onClose, puzzle, status, guesses, answers }
 }
 
 function AnswerDetail({ cell }: { cell: Cell }) {
-  const { lat, lng } = cellCenter(cell);
+  const address = useAddress(cell);
   return (
-    <div className="grid gap-1 border-b border-line-soft py-[13px]">
-      <span className="font-mono text-[11px] leading-normal text-[#7f8977]">
-        위도 {lat.toFixed(5)} · 경도 {lng.toFixed(5)}
+    <div className="flex items-center justify-between gap-3 border-b border-line-soft py-[13px]">
+      <span className="text-[13px] leading-normal font-semibold text-[#33463b]">
+        {address ?? "주소 조회 중…"}
       </span>
+      <NaverMapLink cell={cell} className="text-xs" />
     </div>
   );
 }

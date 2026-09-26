@@ -1,4 +1,4 @@
-import korea from "../data/korea.json";
+import korea from "../data/korea.json" with { type: "json" };
 import { REPEAT_SIZE } from "./constants";
 import { cellCenter, type Cell } from "./cell";
 import { parsePoleNumber } from "./pole-number";

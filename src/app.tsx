@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { GameMap } from "@/components/map/game-map";
+import type { FocusRequest } from "@/components/map/guess-marker";
 import { HelpDialog } from "@/components/dialogs/help-dialog";
 import { ModesDialog } from "@/components/dialogs/modes-dialog";
 import { ResultDialog } from "@/components/dialogs/result-dialog";
@@ -18,6 +20,10 @@ export function App() {
   // A finished game opens straight to its result.
   const [panel, setPanel] = useState<Panel>(() => (game.status === "playing" ? null : "result"));
   const closePanel = () => setPanel(null);
+  // Bumping the version re-focuses the same guess when its slot is clicked again.
+  const [focusRequest, setFocusRequest] = useState<FocusRequest | null>(null);
+  const showGuess = (index: number) =>
+    setFocusRequest((previous) => ({ index, version: (previous?.version ?? 0) + 1 }));
 
   function submit() {
     const status = game.submit();
@@ -37,9 +43,10 @@ export function App() {
         right={
           <PuzzlePanel
             game={game}
-            map={<div className="absolute inset-0 bg-map" />}
+            map={<GameMap game={game} hardMode={hardMode} focusRequest={focusRequest} />}
             onSubmit={submit}
             onShowResult={() => setPanel("result")}
+            onShowGuess={showGuess}
           />
         }
       />

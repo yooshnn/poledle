@@ -26,7 +26,6 @@ const usedLocations = new Set<string>(); // numbers sharing the first 7 characte
 for (const [index, file] of files.entries()) {
   const quota = regionQuota(index, files.length);
   // One file at a time keeps memory bounded (the largest file has over a million numbers).
-  // oxlint-disable-next-line no-await-in-loop
   const codes = await readPoleNumbers(path.join(csvDirectory, file));
   const candidates = shuffle([...codes], createRandom(`${SAMPLE_SEED}:${index}`));
 

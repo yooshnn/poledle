@@ -13,5 +13,19 @@
   "ignorePatterns": ["dist"],
   "rules": {
     "react/react-in-jsx-scope": "off"
-  }
+  },
+  "overrides": [
+    {
+      "files": ["e2e/**", "scripts/**"],
+      "rules": {
+        "no-await-in-loop": "off"
+      }
+    },
+    {
+      "files": ["e2e/fake-naver-maps.js"],
+      "rules": {
+        "typescript/no-extraneous-class": "off"
+      }
+    }
+  ]
 }

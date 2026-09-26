@@ -1,0 +1,33 @@
+import { useMemo } from "react";
+import type { Cell } from "@/domain/cell";
+import { NaverMap, cellLatLng } from "@/map/naver-map";
+import { CellMarker } from "@/map/overlays";
+import { AnswerLayer } from "./answer-layer";
+import { MapStatus } from "./map-status";
+import { useNaverMaps } from "./use-naver-maps";
+import { ZoomControls } from "./zoom-controls";
+
+const FRAME =
+  "relative h-[200px] overflow-hidden rounded-[7px] border border-[#d5ded3] bg-map md:h-[235px]";
+// lucide "check" icon, inlined because markers take HTML strings.
+const ANSWER_PIN =
+  '<div class="box-border grid size-8 place-items-center rounded-full border-2 border-white bg-[#277661] text-white shadow-[0_0_0_2px_#277661,0_3px_8px_#26382d80]"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></div>';
+
+// Small map in the result dialog showing one answer cell.
+export function AnswerMap({ cell }: { cell: Cell }) {
+  const status = useNaverMaps();
+  const cells = useMemo(() => [cell], [cell]);
+  if (status !== "ready") return <MapStatus status={status} className={FRAME} />;
+
+  return (
+    <NaverMap
+      label="선택한 정답 구획 지도"
+      options={{ center: cellLatLng(cell), zoom: 15, scrollWheel: false }}
+      className={FRAME}
+    >
+      <ZoomControls />
+      <AnswerLayer cells={cells} single />
+      <CellMarker cell={cell} html={ANSWER_PIN} size={32} title="정답 구획" zIndex={200} />
+    </NaverMap>
+  );
+}

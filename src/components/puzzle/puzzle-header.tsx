@@ -10,7 +10,10 @@ export function PuzzleHeader({ puzzle }: { puzzle: Puzzle }) {
         <Eyebrow>
           데일리 전봇들 <span className="ml-2.5 tracking-[1px] text-[#879084]">#{number}</span>
         </Eyebrow>
-        <div className="mt-[9px] font-mono text-[28px] leading-[1.2] font-semibold tracking-[3px] md:text-[37px]">
+        <div
+          data-testid="pole-code"
+          className="mt-[9px] font-mono text-[28px] leading-[1.2] font-semibold tracking-[3px] md:text-[37px]"
+        >
           {code.slice(0, 4)}
           <span className="ml-2.5 text-rust">{code.slice(4, 7)}</span>
           <small className="text-[25px] text-faint md:text-[30px]">{code.slice(7)}</small>

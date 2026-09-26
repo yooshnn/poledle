@@ -18,11 +18,13 @@ export function PuzzlePanel({
   map,
   onSubmit,
   onShowResult,
+  onShowGuess,
 }: {
   game: DailyGame;
   map: ReactNode;
   onSubmit: () => void;
   onShowResult: () => void;
+  onShowGuess: (index: number) => void;
 }) {
   const done = game.status !== "playing";
 
@@ -30,7 +32,7 @@ export function PuzzlePanel({
     <section className="relative flex min-w-0 flex-col overflow-hidden bg-paper">
       <PuzzleHeader puzzle={game.puzzle} />
       <div className="flex flex-wrap items-center gap-3 px-5 pb-3 md:px-[30px] md:pb-[19px] xl:px-10">
-        <AttemptTrack guesses={game.guesses} done={done} />
+        <AttemptTrack guesses={game.guesses} done={done} onShowGuess={onShowGuess} />
         {done && (
           <Button variant="quiet" onClick={onShowResult} className="ml-auto font-bold text-forest">
             결과 보기
