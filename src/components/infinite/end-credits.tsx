@@ -62,7 +62,7 @@ export function EndCredits({ run, className }: { run: InfiniteRun; className?: s
               {run.regions[cellKey(place.cell)] ?? coordinatesText(place.cell)}
             </strong>
             <span className="font-mono text-[11px] tracking-[2px]">
-              {place.code} · {place.attempts}/{MAX_GUESSES} · {formatClock(place.remainingMs)}
+              {place.code} · {place.attempts}/{MAX_GUESSES} ({formatClock(place.remainingMs)})
             </span>
           </div>
         ))}
