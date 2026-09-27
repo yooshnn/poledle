@@ -1,7 +1,11 @@
+import { useState } from "react";
+import { CircleQuestionMark } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Eyebrow } from "@/components/ui/eyebrow";
 import { DIFFICULTIES, DIFFICULTY_ORDER, INFINITE_TITLE, type Difficulty } from "@/domain/infinite";
 import type { InfiniteRun } from "@/game/infinite-run";
 import { PAGE_BODY } from "./layout";
+import { RulesDialog } from "./rules-dialog";
 
 // Each difficulty with its best score and, if one was suspended, the run in progress.
 export function DifficultyPicker({
@@ -13,6 +17,8 @@ export function DifficultyPicker({
   best: Record<Difficulty, number>;
   onPick: (difficulty: Difficulty) => void;
 }) {
+  const [showRules, setShowRules] = useState(false);
+
   return (
     <main className={PAGE_BODY}>
       <div className="w-full max-w-[520px]">
@@ -21,9 +27,12 @@ export function DifficultyPicker({
           {INFINITE_TITLE}
         </h1>
         <p className="mt-2 text-[13px] leading-[1.7] text-body">
-          얼마나 많이 맞힐 수 있는지 도전해 보세요. 3분으로 시작해서, 번호를 읽어 맞힐수록 시간이
-          늘어나요.
+          얼마나 많이 맞힐 수 있는지 도전해 보세요.
         </p>
+        <Button variant="quiet" onClick={() => setShowRules(true)} className="mt-2 -ml-1.5">
+          <CircleQuestionMark aria-hidden="true" />
+          설명 보기
+        </Button>
         <div className="mt-6 grid gap-2.5">
           {DIFFICULTY_ORDER.map((difficulty) => {
             const { label, goal } = DIFFICULTIES[difficulty];
@@ -53,6 +62,7 @@ export function DifficultyPicker({
           })}
         </div>
       </div>
+      <RulesDialog open={showRules} onClose={() => setShowRules(false)} />
     </main>
   );
 }
