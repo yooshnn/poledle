@@ -14,4 +14,8 @@ export const REPEAT_SIZE = 200_000;
 // Letters of the sixteen 500 m squares inside a 2 km block, listed north to south, west to east.
 export const SQUARE_LETTER_ROWS = ["ABEF", "CDGH", "PQWX", "RSYZ"] as const;
 
+// Map zoom from which the 500 m squares and the 50 m cells are drawn. Games and the lesson map
+// share these so the same grid appears at the same zoom everywhere.
+export const GRID_ZOOM = { square: 15, cell: 18 } as const;
+
 export const MAX_GUESSES = 6;
