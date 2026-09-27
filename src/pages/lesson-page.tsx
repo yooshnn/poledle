@@ -1,4 +1,5 @@
 import { SplitLayout } from "@/components/layout/split-layout";
+import { RulerMap } from "@/components/lesson/ruler-map";
 import { PageShell } from "./page-shell";
 
 const TABS = { left: "지도", right: "문서" };
@@ -8,7 +9,7 @@ export function LessonPage() {
   return (
     <PageShell mode="LESSON" stat={null}>
       <SplitLayout
-        left={<div className="size-full bg-map" />}
+        left={<RulerMap />}
         right={<article className="overflow-y-auto bg-paper" />}
         separatorLabel="지도 크기 조절"
         mobileTabs={TABS}

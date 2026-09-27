@@ -1,13 +1,21 @@
+import type { CSSProperties } from "react";
 import { Minus, Plus } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { useNaverMap } from "@/map/naver-map";
 
 const BUTTON =
   "grid size-8 place-items-center text-[#506b59] hover:bg-[#e9f0e8] focus-visible:bg-[#e9f0e8] focus-visible:outline-none [&_svg]:size-4";
 
-export function ZoomControls() {
+export function ZoomControls({ className, style }: { className?: string; style?: CSSProperties }) {
   const map = useNaverMap();
   return (
-    <div className="absolute top-2.5 right-2.5 z-[1] grid divide-y divide-[#e3e8dd] overflow-hidden rounded-md border border-[#cfd8cb] bg-card shadow-[0_2px_8px_#26382d26]">
+    <div
+      className={cn(
+        "absolute top-2.5 right-2.5 z-[1] grid divide-y divide-[#e3e8dd] overflow-hidden rounded-md border border-[#cfd8cb] bg-card shadow-[0_2px_8px_#26382d26]",
+        className,
+      )}
+      style={style}
+    >
       <button
         type="button"
         aria-label="확대"
