@@ -1,16 +1,18 @@
 import { useLayoutEffect, useRef } from "react";
 import { cellKey } from "@/domain/cell";
-import { DIFFICULTIES, INFINITE_TITLE } from "@/domain/infinite";
+import { MAX_GUESSES } from "@/domain/constants";
+import { formatClock } from "@/domain/infinite";
 import type { InfiniteRun } from "@/game/infinite-run";
 import { cn } from "@/lib/utils";
 import { coordinatesText } from "@/map/use-address";
 
 // Pixels per second; the same pace whether a run found three places or three hundred.
-const SPEED = 40;
+const SPEED = 32;
 
-// Decoration behind the run summary: the places found this run roll up like film credits,
+// The places found this run rolling up like film credits inside a panel of the end screen,
 // over and over. Names come from what the run already stored; nothing is fetched here.
-export function EndCredits({ run }: { run: InfiniteRun }) {
+// className sizes the panel.
+export function EndCredits({ run, className }: { run: InfiniteRun; className?: string }) {
   const frame = useRef<HTMLDivElement>(null);
   const roll = useRef<HTMLDivElement>(null);
 
@@ -36,32 +38,34 @@ export function EndCredits({ run }: { run: InfiniteRun }) {
       ref={frame}
       aria-hidden="true"
       data-testid="end-credits"
-      className="pointer-events-none absolute inset-0 overflow-hidden select-none [container-type:size]"
+      className={cn(
+        "pointer-events-none relative overflow-hidden rounded-xl bg-forest-soft/60 select-none [container-type:size] [mask-image:linear-gradient(transparent,#000_12%,#000_88%,transparent)]",
+        className,
+      )}
     >
       <div
         ref={roll}
-        className="absolute inset-x-0 top-full grid animate-credits-roll gap-14 px-6 py-16 text-[#aebbab] motion-reduce:top-0 motion-reduce:animate-none md:px-16"
+        className="absolute inset-x-0 top-full grid animate-credits-roll gap-9 px-6 py-10 text-[#cdd6ca] motion-reduce:top-0 motion-reduce:animate-none md:px-8 md:text-[#6f8a73]"
       >
-        <p className="text-center text-xs font-semibold tracking-[4px]">
-          {INFINITE_TITLE} · {DIFFICULTIES[run.difficulty].label}
-        </p>
+        <p className="text-center text-[10px] font-semibold tracking-[4px]">이번 판에 찾은 곳</p>
         {run.found.map((place, index) => (
           <div
             key={place.code}
-            // Alternate sides so the lines pass beside the summary card, not only behind it.
+            // Alternate sides, like credits passing either side of the screen.
             className={cn(
-              "grid max-w-[min(30rem,40%)] gap-1.5 max-md:max-w-full max-md:justify-self-center max-md:text-center",
+              "grid max-w-[75%] gap-1",
               index % 2 === 0 ? "justify-self-start" : "justify-self-end text-right",
             )}
           >
-            <span className="text-[11px] tracking-[2px]">{index + 1}</span>
-            <strong className="text-xl leading-snug font-semibold md:text-2xl">
+            <span className="text-[10px] tracking-[2px]">{index + 1}</span>
+            <strong className="text-lg leading-snug font-semibold text-[#c3cdc0] md:text-[#3f5f48]">
               {run.regions[cellKey(place.cell)] ?? coordinatesText(place.cell)}
             </strong>
-            <span className="font-mono text-xs tracking-[2px]">{place.code}</span>
+            <span className="font-mono text-[11px] tracking-[2px]">
+              {place.code} · {place.attempts}/{MAX_GUESSES} ({formatClock(place.remainingMs)})
+            </span>
           </div>
         ))}
-        <p className="text-center text-lg font-bold">{run.found.length}문제 연속 정답</p>
       </div>
     </div>
   );

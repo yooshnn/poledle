@@ -3,11 +3,13 @@ import { answerCells } from "../domain/answers";
 import { cellKey, type Cell } from "../domain/cell";
 import { CELL_SIZE } from "../domain/constants";
 import { gameStatus, type GameStatus, type Target } from "../domain/game";
-import { DIFFICULTIES, roundDeadline, type Difficulty, type RunEnd } from "../domain/infinite";
+import { DIFFICULTIES, type Difficulty, type EarnedTime, type RunEnd } from "../domain/infinite";
 import { lookupRegion } from "../map/reverse-geocode";
 import {
   activeRun,
   beatsBest,
+  clockDeadline,
+  remainingAt,
   closeRun,
   endRun,
   guessInRun,
@@ -22,10 +24,14 @@ import { guessEffect, playEffect } from "../sound";
 import { describeGuesses, type Notice, type PuzzleGame } from "./puzzle-game";
 import { loadStore, updateStore } from "./storage";
 
+const BONUS_CHIME_DELAY_MS = 350;
+
 export function useInfiniteGame() {
   const [record, setRecord] = useState(() => loadStore().infinite);
   const [selected, setSelected] = useState<Cell | null>(null);
   const [notice, setNotice] = useState<Notice | null>(null);
+  // Time earned by the last guess; the id tells two identical rewards in a row apart.
+  const [bonus, setBonus] = useState<{ id: number; times: EarnedTime[] } | null>(null);
   const run = activeRun(record);
 
   // Every change is kept in memory and written through to storage.
@@ -34,6 +40,12 @@ export function useInfiniteGame() {
     setSelected(null);
     const saved = updateStore((store) => ({ ...store, infinite: next }));
     setNotice(saved ? null : "storage-unavailable");
+  }
+
+  // Moving to another puzzle or screen leaves the last reward behind.
+  function move(next: InfiniteRecord) {
+    setBonus(null);
+    save(next);
   }
 
   const code = run?.round.code;
@@ -68,8 +80,11 @@ export function useInfiniteGame() {
   });
   useEffect(() => lookUpRegions(answers), [answers]);
 
-  const deadline = run ? roundDeadline(run.round.startedAt) : 0;
-  const isOver = (now: number) => status === "playing" && now >= deadline;
+  // Null while the clock is stopped: suspended, or waiting for the next puzzle.
+  const deadline = run ? clockDeadline(run.clock) : null;
+  // What a stopped clock shows.
+  const stoppedMs = run && deadline === null ? remainingAt(run.clock, 0) : 0;
+  const isOver = (now: number) => status === "playing" && deadline !== null && now >= deadline;
 
   // Ending a run sounds like a loss, or a fanfare when it beats the best score.
   function finish(end: RunEnd) {
@@ -89,13 +104,20 @@ export function useInfiniteGame() {
       timeOut();
       return null;
     }
-    const result = guessInRun(record, selected, target);
+    const result = guessInRun(record, selected, target, Date.now());
     if (!result.ok) {
       setNotice(result.reason);
       return null;
     }
     playEffect(beatsBest(record, result.record) ? "record" : guessEffect(result.status));
+    // Digits read right on a wrong guess get their own chime after the miss.
+    if (result.status === "playing" && result.earned.length > 0) {
+      setTimeout(() => playEffect("bonus"), BONUS_CHIME_DELAY_MS);
+    }
     save(result.record);
+    if (result.earned.length > 0) {
+      setBonus((current) => ({ id: (current?.id ?? 0) + 1, times: result.earned }));
+    }
     return result.status;
   }
 
@@ -128,14 +150,16 @@ export function useInfiniteGame() {
     answers,
     score: run?.found.length ?? 0,
     deadline,
+    stoppedMs,
+    bonus,
     // Resumes the difficulty's unfinished run, or starts one.
-    open: (difficulty: Difficulty) => save(openRun(record, difficulty, Date.now())),
-    retry: (difficulty: Difficulty) => save(startRun(record, difficulty, Date.now())),
-    next: () => save(nextRound(record, Date.now())),
-    suspend: () => save(suspendRun(record, Date.now())),
+    open: (difficulty: Difficulty) => move(openRun(record, difficulty, Date.now())),
+    retry: (difficulty: Difficulty) => move(startRun(record, difficulty, Date.now())),
+    next: () => move(nextRound(record, Date.now())),
+    suspend: () => move(suspendRun(record, Date.now())),
     giveUp: () => finish("gave-up"),
     timeOut,
-    close: () => save(closeRun(record)),
+    close: () => move(closeRun(record)),
   };
 }
 

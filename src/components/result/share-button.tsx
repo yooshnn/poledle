@@ -4,8 +4,15 @@ import { Button } from "@/components/ui/button";
 import { xPostUrl } from "@/domain/share";
 
 // The two ways to share a spoiler-free result: a post on X with the text filled in, or the
-// clipboard (falling back to a selectable text box when clipboard access is denied).
-export function ShareButtons({ text }: { text: string }) {
+// clipboard. When clipboard access is denied, a selectable text box appears, unless the text
+// is already on screen to copy by hand (withFallback false).
+export function ShareButtons({
+  text,
+  withFallback = true,
+}: {
+  text: string;
+  withFallback?: boolean;
+}) {
   const [message, setMessage] = useState("");
   const [showFallback, setShowFallback] = useState(false);
 
@@ -14,7 +21,7 @@ export function ShareButtons({ text }: { text: string }) {
       await navigator.clipboard.writeText(text);
       setMessage("결과를 복사했어요.");
     } catch {
-      setShowFallback(true);
+      setShowFallback(withFallback);
       setMessage("공유 결과를 직접 복사해 주세요.");
     }
   }

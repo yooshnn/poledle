@@ -1,7 +1,10 @@
 import { poleNumbers } from "../data/pole-numbers";
-import { BLOCK_SIZE, CELL_SIZE, SQUARE_SIZE, type Precision } from "./constants";
+import type { Cell } from "./cell";
+import { BLOCK_SIZE, CELL_SIZE, MAX_GUESSES, SQUARE_SIZE, type Precision } from "./constants";
+import { locationCode } from "./pole-number";
 
-// Infinite mode: puzzles back to back until one is missed. The score is the number found.
+// Infinite mode: puzzles back to back on one clock, until a puzzle is missed or the clock runs
+// out. The score is the number found.
 export const INFINITE_TITLE = "어디까지 전봇들 챌린지";
 
 export type Difficulty = "easy" | "normal" | "expert" | "superExpert";
@@ -36,11 +39,55 @@ export const DIFFICULTY_ORDER: Difficulty[] = ["easy", "normal", "expert", "supe
 export const isDifficulty = (value: unknown): value is Difficulty =>
   typeof value === "string" && value in DIFFICULTIES;
 
-// Each round has three minutes of wall-clock time from the moment it starts, so leaving the
-// page does not stop the clock.
-export const ROUND_TIME_MS = 3 * 60 * 1000;
+// A run starts with three minutes and shares that clock across its rounds. Reading the number
+// right earns time back, up to a ceiling.
+export const START_TIME_MS = 3 * 60 * 1000;
+export const MAX_TIME_MS = 10 * 60 * 1000;
+export const BONUS_MS = 30_000;
 
-export const roundDeadline = (startedAt: number) => startedAt + ROUND_TIME_MS;
+// What earned time in a round: the block X digits, the block Y digits, finding the puzzle.
+export type BonusKind = "x" | "y" | "clear";
+export type EarnedTime = { kind: BonusKind; ms: number };
+// Which digit bonuses a round has paid out; each is paid once per round.
+export type RoundBonuses = { x: boolean; y: boolean };
+export const noBonuses = (): RoundBonuses => ({ x: false, y: false });
+
+// Time earned by one guess. The first guess of a round whose location code shares the puzzle's
+// block X digits (XX) or block Y digits (YY) earns BONUS_MS each; digits count wherever the guess
+// is, as they are what the player read. Finding the puzzle earns BONUS_MS plus BONUS_MS for
+// every attempt left unused. Several can be earned at once.
+export function roundBonus(
+  code: string,
+  guess: Cell,
+  before: RoundBonuses,
+  found: boolean,
+  attemptsUsed: number,
+): { ms: number; after: RoundBonuses; earned: EarnedTime[] } {
+  const guessed = locationCode(guess);
+  const earned: EarnedTime[] = [];
+  const after = { ...before };
+  if (!before.x && guessed.slice(0, 2) === code.slice(0, 2)) {
+    after.x = true;
+    earned.push({ kind: "x", ms: BONUS_MS });
+  }
+  if (!before.y && guessed.slice(2, 4) === code.slice(2, 4)) {
+    after.y = true;
+    earned.push({ kind: "y", ms: BONUS_MS });
+  }
+  if (found) earned.push({ kind: "clear", ms: BONUS_MS + (MAX_GUESSES - attemptsUsed) * BONUS_MS });
+  const ms = earned.reduce((sum, time) => sum + time.ms, 0);
+  return { ms, after, earned };
+}
+
+// m:ss, rounding up so a clock shows 0:00 only once time is out.
+export function formatClock(ms: number): string {
+  const seconds = Math.ceil(Math.max(0, ms) / 1000);
+  return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
+}
+
+// Adds earned time to what is left, never past the ceiling.
+export const addTime = (remainingMs: number, bonusMs: number) =>
+  Math.min(MAX_TIME_MS, remainingMs + bonusMs);
 
 // Why a run ended: six wrong guesses, the clock, or the player.
 export type RunEnd = "missed" | "timeout" | "gave-up";

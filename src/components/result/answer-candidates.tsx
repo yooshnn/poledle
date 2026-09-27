@@ -5,13 +5,15 @@ import { cellKey, type Cell } from "@/domain/cell";
 import type { Precision } from "@/domain/constants";
 import { useAddress } from "@/map/use-address";
 
+const NO_REGIONS: Record<string, string> = {};
+
 // Every cell carrying the puzzle's number, one at a time on a small map with its region.
 // Region names already stored (by cellKey) are shown without looking them up again.
 export function AnswerCandidates({
   answers,
   precision,
   initialIndex = 0,
-  knownRegions = {},
+  knownRegions = NO_REGIONS,
 }: {
   answers: Cell[];
   precision: Precision;

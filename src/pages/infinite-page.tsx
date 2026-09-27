@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { DifficultyPicker } from "@/components/infinite/difficulty-picker";
 import { GiveUpDialog } from "@/components/infinite/give-up-dialog";
+import { BonusToast } from "@/components/infinite/bonus-toast";
 import { RoundTimer } from "@/components/infinite/round-timer";
 import { RunSummary } from "@/components/infinite/run-summary";
 import { Landscape } from "@/components/landscape/landscape";
@@ -81,11 +82,15 @@ function Round({
                 code={game.code}
                 aside={
                   <>
-                    {won ? (
-                      <span className="text-sm font-bold text-leaf">찾았어요!</span>
-                    ) : (
-                      <RoundTimer deadline={infinite.deadline} onTimeout={infinite.timeOut} />
-                    )}
+                    <span className="relative inline-flex items-baseline gap-2">
+                      {won && <span className="text-sm font-bold text-leaf">찾았어요!</span>}
+                      <RoundTimer
+                        deadline={infinite.deadline}
+                        stoppedMs={infinite.stoppedMs}
+                        onTimeout={infinite.timeOut}
+                      />
+                      <BonusToast bonus={infinite.bonus} />
+                    </span>
                     <br />
                     <span className="text-[8px] text-[#8a9386] md:text-[9px]">
                       최고 {Math.max(infinite.record.best[run.difficulty], infinite.score)}문제

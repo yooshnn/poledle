@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { INFINITE_TITLE } from "@/domain/infinite";
 import { Link } from "@/lib/router";
 
 export function HelpDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
@@ -18,10 +17,6 @@ export function HelpDialog({ open, onClose }: { open: boolean; onClose: () => vo
             <li>
               상단의 X를 누르면 지난 추측을 다시 볼 수 있어요. 정답 방향과 같은 자리의 글자도
               보여줍니다.
-            </li>
-            <li>
-              {INFINITE_TITLE}에서는 난이도를 골라 문제를 연달아 풀어요. 문제마다 3분, 한 문제라도
-              놓치면 끝나요. 중단하면 시간이 멈추고, 같은 난이도를 다시 고르면 이어져요.
             </li>
             <li>
               번호 읽는 법이 궁금하다면{" "}
