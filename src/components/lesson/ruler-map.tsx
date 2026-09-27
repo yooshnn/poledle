@@ -4,7 +4,6 @@ import { ZoomControls } from "@/components/map/zoom-controls";
 import { NaverMap, useNaverMap } from "@/map/naver-map";
 import { GridLines } from "./grid-lines";
 import { LocationBadge } from "./location-badge";
-import { RegionLabels } from "./region-labels";
 import { useLiveMapView, useSettledMapView } from "./map-view";
 import { Rulers, TIER_PX, tierCount } from "./rulers";
 
@@ -28,7 +27,6 @@ export function RulerMap() {
           className={FRAME}
         >
           <GridLines />
-          <RegionLabels />
           <Overlays />
         </NaverMap>
       ) : (

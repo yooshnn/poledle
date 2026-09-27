@@ -15,7 +15,7 @@ export type RegionCodes = {
 // About 1 km, half a 2 km block: fine enough not to skip a block at the edge of a range.
 const SAMPLE_STEP_DEGREES = 0.009;
 
-export function regionCenter({ south, north, west, east }: Bounds): LngLat {
+function regionCenter({ south, north, west, east }: Bounds): LngLat {
   return { lng: (west + east) / 2, lat: (south + north) / 2 };
 }
 

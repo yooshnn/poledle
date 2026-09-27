@@ -44,14 +44,6 @@ test("the lesson: rulers, the code under the crosshair, region tables and mobile
     ).toBeAttached();
   });
 
-  await test.step("region labels give way to the base map's names when zoomed in", async () => {
-    await player.zoomTo(7);
-    await expect(page.getByTestId("region-label").filter({ hasText: "서울" })).toBeVisible();
-    await expect(page.getByTestId("region-label").filter({ hasText: "목포" })).toBeHidden();
-    await player.zoomTo(12);
-    await expect(page.getByTestId("region-label").filter({ hasText: "서울" })).toBeHidden();
-  });
-
   await test.step("the key-region table lists Seoul with its representative digits", async () => {
     const seoul = page
       .getByRole("row")
