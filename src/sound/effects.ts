@@ -3,7 +3,7 @@ import { runningEngine } from "./engine";
 
 // Short synthesized sound effects for game actions. Nothing is downloaded.
 
-export type Effect = "select" | "wrong" | "correct" | "lose" | "record" | "tick";
+export type Effect = "select" | "wrong" | "correct" | "bonus" | "lose" | "record" | "tick";
 
 // Note frequencies (Hz).
 const C4 = 261.63;
@@ -41,6 +41,11 @@ const EFFECTS: Record<Effect, Note[]> = {
     { frequency: E5, at: 0.07, duration: 0.45, volume: 0.16 },
     { frequency: G5, at: 0.14, duration: 0.5, volume: 0.16 },
     { frequency: C6, at: 0.21, duration: 0.7, volume: 0.07 },
+  ],
+  // Two quick rising notes when time is earned without finding the puzzle.
+  bonus: [
+    { frequency: G5, duration: 0.12, volume: 0.1 },
+    { frequency: C6, at: 0.08, duration: 0.22, volume: 0.1 },
   ],
   // A slow falling minor line when a game or run is lost.
   lose: [

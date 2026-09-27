@@ -23,8 +23,10 @@ describe("Infinite time bonuses", () => {
   test("block digits pay once per round, wherever the guess is", () => {
     // Same X digits read in the east zone: the digits, not the place, earn the time.
     const sameX = roundBonus(CODE, cellFor("0350A001", "east"), noBonuses(), false, 1);
-    expect(sameX.earned).toEqual(["x"]);
-    expect(roundBonus(CODE, cellFor("0311A001"), sameX.after, false, 2).earned).toEqual(["y"]);
+    expect(sameX.earned).toEqual([{ kind: "x", ms: BONUS_MS }]);
+    expect(roundBonus(CODE, cellFor("0311A001"), sameX.after, false, 2).earned).toEqual([
+      { kind: "y", ms: BONUS_MS },
+    ]);
     expect(roundBonus(CODE, cellFor("0311A001"), { x: true, y: true }, false, 3).ms).toBe(0);
   });
 

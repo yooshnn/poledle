@@ -55,7 +55,7 @@ describe("Infinite run clock", () => {
     const { record, target, answer } = started();
     const result = guessInRun(record, answer, target, T0 + 20 * SECOND);
     if (!result.ok) throw new Error(result.reason);
-    expect(result.earned).toEqual(["x", "y", "clear"]);
+    expect(result.earned.map((time) => time.kind)).toEqual(["x", "y", "clear"]);
 
     const afterFind = START_TIME_MS - 20 * SECOND + 8 * BONUS_MS;
     expect(remainingAt(clockOf(result.record), T0 + 999 * SECOND)).toBe(afterFind);

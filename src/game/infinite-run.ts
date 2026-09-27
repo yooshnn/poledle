@@ -10,7 +10,7 @@ import {
   pickCode,
   roundBonus,
   START_TIME_MS,
-  type BonusKind,
+  type EarnedTime,
   type Difficulty,
   type RoundBonuses,
   type RunEnd,
@@ -171,7 +171,7 @@ export const beatsBest = (before: InfiniteRecord, after: InfiniteRecord) =>
   DIFFICULTY_ORDER.some((difficulty) => after.best[difficulty] > before.best[difficulty]);
 
 export type RunGuessResult =
-  | { ok: true; record: InfiniteRecord; status: GameStatus; earned: BonusKind[] }
+  | { ok: true; record: InfiniteRecord; status: GameStatus; earned: EarnedTime[] }
   | { ok: false; reason: Notice };
 
 // A guess adds the time it earned (see roundBonus). A correct one adds the answer cell it matched

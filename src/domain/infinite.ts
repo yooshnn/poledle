@@ -47,6 +47,7 @@ export const BONUS_MS = 30_000;
 
 // What earned time in a round: the block X digits, the block Y digits, finding the puzzle.
 export type BonusKind = "x" | "y" | "clear";
+export type EarnedTime = { kind: BonusKind; ms: number };
 // Which digit bonuses a round has paid out; each is paid once per round.
 export type RoundBonuses = { x: boolean; y: boolean };
 export const noBonuses = (): RoundBonuses => ({ x: false, y: false });
@@ -61,23 +62,20 @@ export function roundBonus(
   before: RoundBonuses,
   found: boolean,
   attemptsUsed: number,
-): { ms: number; after: RoundBonuses; earned: BonusKind[] } {
+): { ms: number; after: RoundBonuses; earned: EarnedTime[] } {
   const guessed = locationCode(guess);
-  const earned: BonusKind[] = [];
+  const earned: EarnedTime[] = [];
   const after = { ...before };
   if (!before.x && guessed.slice(0, 2) === code.slice(0, 2)) {
     after.x = true;
-    earned.push("x");
+    earned.push({ kind: "x", ms: BONUS_MS });
   }
   if (!before.y && guessed.slice(2, 4) === code.slice(2, 4)) {
     after.y = true;
-    earned.push("y");
+    earned.push({ kind: "y", ms: BONUS_MS });
   }
-  let ms = earned.length * BONUS_MS;
-  if (found) {
-    earned.push("clear");
-    ms += BONUS_MS + (MAX_GUESSES - attemptsUsed) * BONUS_MS;
-  }
+  if (found) earned.push({ kind: "clear", ms: BONUS_MS + (MAX_GUESSES - attemptsUsed) * BONUS_MS });
+  const ms = earned.reduce((sum, time) => sum + time.ms, 0);
   return { ms, after, earned };
 }
 
