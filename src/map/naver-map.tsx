@@ -89,7 +89,10 @@ export function NaverMap({
   }, []);
 
   return (
-    <div className={cn("isolate", className)}>
+    // setSize() pins the map element to inline pixels. Inline-size containment keeps those pixels
+    // out of the frame's own width, so the frame can still shrink with its container (in a grid
+    // or flex track it would otherwise hold the track at the map's last width).
+    <div className={cn("isolate [contain:inline-size]", className)}>
       <div
         ref={mountMap}
         tabIndex={0}
