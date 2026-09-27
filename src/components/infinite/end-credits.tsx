@@ -44,7 +44,7 @@ export function EndCredits({ run, className }: { run: InfiniteRun; className?: s
     >
       <div
         ref={roll}
-        className="absolute inset-x-0 top-full grid animate-credits-roll gap-9 px-6 py-10 text-[#6f8a73] motion-reduce:top-0 motion-reduce:animate-none md:px-8"
+        className="absolute inset-x-0 top-full grid animate-credits-roll gap-9 px-6 py-10 text-[#cdd6ca] motion-reduce:top-0 motion-reduce:animate-none md:px-8 md:text-[#6f8a73]"
       >
         <p className="text-center text-[10px] font-semibold tracking-[4px]">이번 판에 찾은 곳</p>
         {run.found.map((place, index) => (
@@ -57,7 +57,7 @@ export function EndCredits({ run, className }: { run: InfiniteRun; className?: s
             )}
           >
             <span className="text-[10px] tracking-[2px]">{index + 1}</span>
-            <strong className="text-lg leading-snug font-semibold text-[#3f5f48]">
+            <strong className="text-lg leading-snug font-semibold text-[#c3cdc0] md:text-[#3f5f48]">
               {run.regions[cellKey(place.cell)] ?? coordinatesText(place.cell)}
             </strong>
             <span className="font-mono text-[11px] tracking-[2px]">

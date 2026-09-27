@@ -43,7 +43,8 @@ export function RunSummary({
   const [sharing, setSharing] = useState(false);
 
   return (
-    <main className="min-h-[calc(100dvh-58px)] bg-paper px-5 py-8 md:grid md:min-h-[calc(100dvh-78px)] md:content-center md:px-10 md:py-12">
+    // isolate: the phone credits sit at z -1, above this background but below the content.
+    <main className="relative isolate min-h-[calc(100dvh-58px)] bg-paper px-5 py-8 md:grid md:min-h-[calc(100dvh-78px)] md:content-center md:px-10 md:py-12">
       <section aria-label="게임 결과" className="mx-auto w-full max-w-[1040px]">
         <div className="flex items-center justify-between gap-4">
           <Eyebrow>
@@ -60,7 +61,8 @@ export function RunSummary({
         </div>
 
         {/* Wide screens: the result, the last puzzle and the buttons down the first column,
-            the credits rolling in the second. Phones: the credits come before the buttons. */}
+            the credits rolling in a panel in the second. Phones: the credits roll behind the
+            whole page. */}
         <div className="mt-6 grid content-start gap-6 md:mt-8 md:grid-cols-2 md:gap-x-14">
           <div className="md:col-start-1">
             <h1 className="font-bold tracking-[-1px] text-ink-strong">
@@ -81,7 +83,7 @@ export function RunSummary({
 
           <EndCredits
             run={run}
-            className="h-64 md:col-start-2 md:row-span-3 md:row-start-1 md:h-auto"
+            className="max-md:absolute max-md:inset-0 max-md:-z-10 max-md:rounded-none max-md:bg-transparent md:col-start-2 md:row-span-3 md:row-start-1"
           />
 
           <div className="grid grid-cols-2 gap-2 md:col-start-1">
