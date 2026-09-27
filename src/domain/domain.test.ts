@@ -1,7 +1,9 @@
 import { describe, expect, test } from "vitest";
 import { poleNumbers } from "../data/pole-numbers";
-import { answerCells, isOnLand } from "./answers";
-import { cellCenter, cellKey, snapToCell, type Cell } from "./cell";
+import { landMask } from "../data/land-mask";
+import { answerCells } from "./answers";
+import { cellCenter, cellKey, sameCell, snapToCell, type Cell } from "./cell";
+import { hasLand } from "./land-mask";
 import { dailyPuzzle, koreaDate } from "./daily";
 import { hintLabel } from "./game";
 import { dailyShareText } from "./share";
@@ -15,6 +17,8 @@ const documented: Cell = {
   y: gridBase("middle").y + 22300,
 };
 
+const land = (lng: number, lat: number) => hasLand(landMask, snapToCell({ lng, lat }));
+
 describe("pole number grid", () => {
   test("matches the documented example and projection constants", () => {
     expect(parsePoleNumber("0311Z961")).toEqual({ x: 7950, y: 22300 });
@@ -23,10 +27,19 @@ describe("pole number grid", () => {
     const origin = toTM({ lng: 127, lat: 38 }, "middle");
     expect(origin.x).toBeCloseTo(200_000, 3);
     expect(origin.y).toBeCloseTo(600_000, 3);
+  });
 
-    expect(isOnLand({ lng: 126.978, lat: 37.566 })).toBe(true); // Seoul
-    expect(isOnLand({ lng: 126.53, lat: 33.38 })).toBe(true); // Jeju
-    expect(isOnLand({ lng: 125, lat: 35 })).toBe(false); // Yellow Sea
+  test("the land mask keeps coasts and islands and drops the open sea", () => {
+    expect(land(126.978, 37.566)).toBe(true); // Seoul
+    expect(land(126.53, 33.38)).toBe(true); // Jeju
+    expect(land(131.8647, 37.2417)).toBe(true); // Dokdo
+    expect(land(129.0366, 35.086)).toBe(true); // Busan, Jung-gu
+    expect(land(125, 35)).toBe(false); // Yellow Sea
+    expect(land(126.7, 38.85)).toBe(false); // North of the border
+
+    // 8997P811's cell on the Hwaseong shore was once dropped as sea.
+    const shore = snapToCell({ lng: 126.74702, lat: 37.04363 });
+    expect(answerCells("8997P811").some((cell) => sameCell(cell, shore))).toBe(true);
   });
 
   test("every sampled pole number is playable and its answers round-trip through the map", () => {
