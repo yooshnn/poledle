@@ -29,7 +29,7 @@ export type Round = { code: string; guesses: Cell[]; bonuses: RoundBonuses };
 export type RunClock = { remainingMs: number; runningSince: number | null };
 
 // An answer cell the player found, in the order found.
-// remainingMs is the time that was left on the clock when it was found, before its bonus.
+// remainingMs is the time on the clock once it was found, its bonuses included.
 export type FoundPlace = { code: string; cell: Cell; remainingMs: number };
 
 export type InfiniteRun = {
@@ -192,14 +192,11 @@ export function guessInRun(
   const status = gameStatus(result.guesses, target);
   const hit = target.answers.find((answer) => sameRegion(answer, cell, target.precision));
   const bonus = roundBonus(run.round.code, cell, run.round.bonuses, !!hit, result.guesses.length);
-  const leftAtGuess = remainingAt(run.clock, now);
-  const remainingMs = addTime(leftAtGuess, bonus.ms);
+  const remainingMs = addTime(remainingAt(run.clock, now), bonus.ms);
   // The clock restarts from the new balance, or stays stopped until the next puzzle.
   const clock = { remainingMs, runningSince: hit ? null : now };
   const round = { ...run.round, guesses: result.guesses, bonuses: bonus.after };
-  const found = hit
-    ? [...run.found, { code: round.code, cell: hit, remainingMs: leftAtGuess }]
-    : run.found;
+  const found = hit ? [...run.found, { code: round.code, cell: hit, remainingMs }] : run.found;
   const next = withActiveRun(record, () => ({ ...run, round, found, clock }));
   return {
     ok: true,

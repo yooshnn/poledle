@@ -57,10 +57,9 @@ describe("Infinite run clock", () => {
     if (!result.ok) throw new Error(result.reason);
     expect(result.earned.map((time) => time.kind)).toEqual(["x", "y", "clear"]);
 
-    // The found place keeps the time that was left when it was found, before its bonus.
-    expect(activeRun(result.record)?.found[0]?.remainingMs).toBe(START_TIME_MS - 20 * SECOND);
-
     const afterFind = START_TIME_MS - 20 * SECOND + 8 * BONUS_MS;
+    // The found place keeps the time on the clock once found, bonuses included.
+    expect(activeRun(result.record)?.found[0]?.remainingMs).toBe(afterFind);
     expect(remainingAt(clockOf(result.record), T0 + 999 * SECOND)).toBe(afterFind);
     // Leaving and coming back while the found puzzle is on screen keeps the clock stopped.
     const back = openRun(suspendRun(result.record, T0 + 30 * SECOND), "expert", T0 + 99 * SECOND);

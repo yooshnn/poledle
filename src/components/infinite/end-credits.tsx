@@ -61,7 +61,7 @@ export function EndCredits({ run, className }: { run: InfiniteRun; className?: s
               {run.regions[cellKey(place.cell)] ?? coordinatesText(place.cell)}
             </strong>
             <span className="font-mono text-[11px] tracking-[2px]">
-              {place.code} · {formatClock(place.remainingMs)} 남음
+              {place.code} · {formatClock(place.remainingMs)}
             </span>
           </div>
         ))}
