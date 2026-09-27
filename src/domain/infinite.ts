@@ -39,12 +39,6 @@ export const DIFFICULTY_ORDER: Difficulty[] = ["easy", "normal", "expert", "supe
 export const isDifficulty = (value: unknown): value is Difficulty =>
   typeof value === "string" && value in DIFFICULTIES;
 
-// Each round has three minutes of wall-clock time from the moment it starts, so leaving the
-// page does not stop the clock.
-export const ROUND_TIME_MS = 3 * 60 * 1000;
-
-export const roundDeadline = (startedAt: number) => startedAt + ROUND_TIME_MS;
-
 // A run starts with three minutes and shares that clock across its rounds. Reading the number
 // right earns time back, up to a ceiling.
 export const START_TIME_MS = 3 * 60 * 1000;

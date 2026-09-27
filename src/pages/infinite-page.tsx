@@ -81,7 +81,7 @@ function Round({
                 code={game.code}
                 aside={
                   <>
-                    {won ? (
+                    {won || infinite.deadline === null ? (
                       <span className="text-sm font-bold text-leaf">찾았어요!</span>
                     ) : (
                       <RoundTimer deadline={infinite.deadline} onTimeout={infinite.timeOut} />

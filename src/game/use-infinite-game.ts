@@ -3,11 +3,12 @@ import { answerCells } from "../domain/answers";
 import { cellKey, type Cell } from "../domain/cell";
 import { CELL_SIZE } from "../domain/constants";
 import { gameStatus, type GameStatus, type Target } from "../domain/game";
-import { DIFFICULTIES, roundDeadline, type Difficulty, type RunEnd } from "../domain/infinite";
+import { DIFFICULTIES, type Difficulty, type RunEnd } from "../domain/infinite";
 import { lookupRegion } from "../map/reverse-geocode";
 import {
   activeRun,
   beatsBest,
+  clockDeadline,
   closeRun,
   endRun,
   guessInRun,
@@ -68,8 +69,9 @@ export function useInfiniteGame() {
   });
   useEffect(() => lookUpRegions(answers), [answers]);
 
-  const deadline = run ? roundDeadline(run.round.startedAt) : 0;
-  const isOver = (now: number) => status === "playing" && now >= deadline;
+  // Null while the clock is stopped: suspended, or waiting for the next puzzle.
+  const deadline = run ? clockDeadline(run.clock) : null;
+  const isOver = (now: number) => status === "playing" && deadline !== null && now >= deadline;
 
   // Ending a run sounds like a loss, or a fanfare when it beats the best score.
   function finish(end: RunEnd) {
@@ -89,7 +91,7 @@ export function useInfiniteGame() {
       timeOut();
       return null;
     }
-    const result = guessInRun(record, selected, target);
+    const result = guessInRun(record, selected, target, Date.now());
     if (!result.ok) {
       setNotice(result.reason);
       return null;
