@@ -22,8 +22,6 @@ export function EndCredits({ run, className }: { run: InfiniteRun; className?: s
     const update = () => {
       const distance = frameElement.clientHeight + rollElement.offsetHeight;
       rollElement.style.animationDuration = `${distance / SPEED}s`;
-      // Start with the first lines already in view rather than an empty panel.
-      rollElement.style.animationDelay = `${(-0.6 * frameElement.clientHeight) / SPEED}s`;
     };
     const observer = new ResizeObserver(update);
     observer.observe(frameElement);
@@ -45,11 +43,18 @@ export function EndCredits({ run, className }: { run: InfiniteRun; className?: s
     >
       <div
         ref={roll}
-        className="absolute inset-x-0 top-full grid animate-credits-roll justify-items-center gap-9 px-6 py-10 text-center text-[#6f8a73] motion-reduce:top-0 motion-reduce:animate-none"
+        className="absolute inset-x-0 top-full grid animate-credits-roll gap-9 px-6 py-10 text-[#6f8a73] motion-reduce:top-0 motion-reduce:animate-none md:px-8"
       >
-        <p className="text-[10px] font-semibold tracking-[4px]">이번 판에 찾은 곳</p>
+        <p className="text-center text-[10px] font-semibold tracking-[4px]">이번 판에 찾은 곳</p>
         {run.found.map((place, index) => (
-          <div key={place.code} className="grid gap-1">
+          <div
+            key={place.code}
+            // Alternate sides, like credits passing either side of the screen.
+            className={cn(
+              "grid max-w-[75%] gap-1",
+              index % 2 === 0 ? "justify-self-start" : "justify-self-end text-right",
+            )}
+          >
             <span className="text-[10px] tracking-[2px]">{index + 1}</span>
             <strong className="text-lg leading-snug font-semibold text-[#3f5f48]">
               {run.regions[cellKey(place.cell)] ?? coordinatesText(place.cell)}

@@ -59,48 +59,44 @@ export function RunSummary({
           </Button>
         </div>
 
-        {/* The result, the last puzzle and what next in one column; the credits roll in the
-            other on wide screens and under everything on phones. */}
-        <div className="mt-6 grid gap-8 md:mt-8 md:grid-cols-2 md:gap-14">
-          <div className="grid content-start gap-6">
-            <div>
-              <h1 className="font-bold tracking-[-1px] text-ink-strong">
-                <span className="text-[64px] leading-none md:text-[80px]">{score}</span>
-                <span className="ml-1 text-[26px] md:text-[30px]">문제 연속 정답</span>
-              </h1>
-              <p className="mt-3 text-[13px] text-[#6f7c6c]">
-                {END_TEXT[end]} · {record}
-              </p>
-            </div>
-
-            <div>
-              <p className="mb-2.5 text-[12px] text-[#7f8977]">
-                마지막 문제{" "}
-                <span className="font-mono font-semibold text-ink">{run.round.code}</span>
-              </p>
-              <AnswerCandidates
-                answers={answers}
-                precision={precision}
-                knownRegions={run.regions}
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-2">
-              <Button ref={retry} variant="primary" onClick={onRetry}>
-                다시 도전하기
-                <RotateCcw aria-hidden="true" />
-              </Button>
-              <Button
-                variant="primary"
-                onClick={onChangeDifficulty}
-                className="border border-forest bg-card text-forest hover:bg-forest-soft"
-              >
-                난이도 선택하기
-              </Button>
-            </div>
+        {/* Wide screens: the result, the last puzzle and the buttons down the first column,
+            the credits rolling in the second. Phones: the credits come before the buttons. */}
+        <div className="mt-6 grid content-start gap-6 md:mt-8 md:grid-cols-2 md:gap-x-14">
+          <div className="md:col-start-1">
+            <h1 className="font-bold tracking-[-1px] text-ink-strong">
+              <span className="text-[64px] leading-none md:text-[80px]">{score}</span>
+              <span className="ml-1 text-[26px] md:text-[30px]">문제 연속 정답</span>
+            </h1>
+            <p className="mt-3 text-[13px] text-[#6f7c6c]">
+              {END_TEXT[end]} · {record}
+            </p>
           </div>
 
-          <EndCredits run={run} className="h-64 md:h-auto" />
+          <div className="md:col-start-1">
+            <p className="mb-2.5 text-[12px] text-[#7f8977]">
+              마지막 문제 <span className="font-mono font-semibold text-ink">{run.round.code}</span>
+            </p>
+            <AnswerCandidates answers={answers} precision={precision} knownRegions={run.regions} />
+          </div>
+
+          <EndCredits
+            run={run}
+            className="h-64 md:col-start-2 md:row-span-3 md:row-start-1 md:h-auto"
+          />
+
+          <div className="grid grid-cols-2 gap-2 md:col-start-1">
+            <Button ref={retry} variant="primary" onClick={onRetry}>
+              다시 도전하기
+              <RotateCcw aria-hidden="true" />
+            </Button>
+            <Button
+              variant="primary"
+              onClick={onChangeDifficulty}
+              className="border border-forest bg-card text-forest hover:bg-forest-soft"
+            >
+              난이도 선택하기
+            </Button>
+          </div>
         </div>
       </section>
       <ShareDialog
