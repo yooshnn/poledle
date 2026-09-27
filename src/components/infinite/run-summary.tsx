@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Gauge, RotateCcw, Share2 } from "lucide-react";
+import { CornerUpLeft, RotateCcw, Share2 } from "lucide-react";
 import { AnswerCandidates } from "@/components/result/answer-candidates";
 import { ShareDialog } from "@/components/result/share-dialog";
 import { Button } from "@/components/ui/button";
@@ -89,7 +89,7 @@ export function RunSummary({
               className="border border-forest bg-card text-forest hover:bg-forest-soft"
             >
               난이도 선택하기
-              <Gauge aria-hidden="true" />
+              <CornerUpLeft aria-hidden="true" />
             </Button>
           </div>
         </div>
