@@ -21,7 +21,8 @@ export function DifficultyPicker({
           {INFINITE_TITLE}
         </h1>
         <p className="mt-2 text-[13px] leading-[1.7] text-body">
-          얼마나 많이 맞힐 수 있는지 도전해 보세요.
+          얼마나 많이 맞힐 수 있는지 도전해 보세요. 3분으로 시작해서, 번호를 읽어 맞힐수록 시간이
+          늘어나요.
         </p>
         <div className="mt-6 grid gap-2.5">
           {DIFFICULTY_ORDER.map((difficulty) => {
