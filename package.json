@@ -16,6 +16,7 @@
     "e2e": "playwright test",
     "check": "pnpm fmt:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build",
     "data:pole-numbers": "tsx scripts/sample-pole-numbers.ts",
+    "data:land-mask": "tsx scripts/build-land-mask.ts",
     "prepare": "lefthook install"
   },
   "dependencies": {
@@ -37,6 +38,7 @@
     "@types/react-dom": "^19.3.0",
     "@types/three": "^0.186.0",
     "@vitejs/plugin-react": "^6.1.1",
+    "hyparquet": "^1.31.1",
     "lefthook": "^2.1.14",
     "oxfmt": "^0.70.0",
     "oxlint": "^1.85.0",
