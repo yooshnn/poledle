@@ -29,8 +29,9 @@ export type Round = { code: string; guesses: Cell[]; bonuses: RoundBonuses };
 export type RunClock = { remainingMs: number; runningSince: number | null };
 
 // An answer cell the player found, in the order found.
-// remainingMs is the time on the clock once it was found, its bonuses included.
-export type FoundPlace = { code: string; cell: Cell; remainingMs: number };
+// attempts is how many guesses finding it took; remainingMs is the time on the clock once it
+// was found, its bonuses included.
+export type FoundPlace = { code: string; cell: Cell; attempts: number; remainingMs: number };
 
 export type InfiniteRun = {
   difficulty: Difficulty;
@@ -196,7 +197,10 @@ export function guessInRun(
   // The clock restarts from the new balance, or stays stopped until the next puzzle.
   const clock = { remainingMs, runningSince: hit ? null : now };
   const round = { ...run.round, guesses: result.guesses, bonuses: bonus.after };
-  const found = hit ? [...run.found, { code: round.code, cell: hit, remainingMs }] : run.found;
+  const attempts = result.guesses.length;
+  const found = hit
+    ? [...run.found, { code: round.code, cell: hit, attempts, remainingMs }]
+    : run.found;
   const next = withActiveRun(record, () => ({ ...run, round, found, clock }));
   return {
     ok: true,
@@ -271,6 +275,9 @@ const isFoundPlace = (value: unknown): value is FoundPlace =>
   typeof value.code === "string" &&
   isPoleNumber(value.code) &&
   isValidCell(value.cell) &&
+  Number.isInteger(value.attempts) &&
+  (value.attempts as number) >= 1 &&
+  (value.attempts as number) <= MAX_GUESSES &&
   typeof value.remainingMs === "number" &&
   value.remainingMs >= 0 &&
   value.remainingMs <= MAX_TIME_MS;

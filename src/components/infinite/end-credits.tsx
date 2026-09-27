@@ -1,5 +1,6 @@
 import { useLayoutEffect, useRef } from "react";
 import { cellKey } from "@/domain/cell";
+import { MAX_GUESSES } from "@/domain/constants";
 import { formatClock } from "@/domain/infinite";
 import type { InfiniteRun } from "@/game/infinite-run";
 import { cn } from "@/lib/utils";
@@ -61,7 +62,7 @@ export function EndCredits({ run, className }: { run: InfiniteRun; className?: s
               {run.regions[cellKey(place.cell)] ?? coordinatesText(place.cell)}
             </strong>
             <span className="font-mono text-[11px] tracking-[2px]">
-              {place.code} · {formatClock(place.remainingMs)}
+              {place.code} · {place.attempts}/{MAX_GUESSES} · {formatClock(place.remainingMs)}
             </span>
           </div>
         ))}
