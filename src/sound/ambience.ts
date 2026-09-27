@@ -124,7 +124,7 @@ function startWind(
   const filter = new BiquadFilterNode(context, { type: "bandpass", frequency: 450, Q: 0.7 });
   const drift = new OscillatorNode(context, { frequency: 0.06 });
   const driftDepth = new GainNode(context, { gain: 250 });
-  const level = new GainNode(context, { gain: 0.07 });
+  const level = new GainNode(context, { gain: 0.045 });
 
   drift.connect(driftDepth).connect(filter.frequency);
   noise.connect(filter).connect(level).connect(output);
