@@ -3,18 +3,15 @@ import { ArrowUpRight, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { xPostUrl } from "@/domain/share";
 
-const LINK =
-  "inline-flex min-h-10 items-center gap-1.5 rounded-md px-2.5 text-xs font-semibold text-[#48604f] transition-colors hover:bg-[#dde9da] hover:text-forest md:text-[13px] [&_svg]:size-4";
-
 // The two ways to share a spoiler-free result: a post on X with the text filled in, or the
-// clipboard (falling back to a selectable text box when clipboard access is denied).
-// As "buttons" they are the main actions; as "links" a quieter row under other actions.
+// clipboard. When clipboard access is denied, a selectable text box appears, unless the text
+// is already on screen to copy by hand (withFallback false).
 export function ShareButtons({
   text,
-  variant = "buttons",
+  withFallback = true,
 }: {
   text: string;
-  variant?: "buttons" | "links";
+  withFallback?: boolean;
 }) {
   const [message, setMessage] = useState("");
   const [showFallback, setShowFallback] = useState(false);
@@ -24,48 +21,33 @@ export function ShareButtons({
       await navigator.clipboard.writeText(text);
       setMessage("결과를 복사했어요.");
     } catch {
-      setShowFallback(true);
+      setShowFallback(withFallback);
       setMessage("공유 결과를 직접 복사해 주세요.");
     }
   }
 
-  const xUrl = xPostUrl(text);
-
   return (
     <>
-      {variant === "links" ? (
-        <div className="mt-3 ml-auto flex w-fit gap-0.5 rounded-lg bg-forest-soft p-1">
-          <a href={xUrl} target="_blank" rel="noreferrer" className={LINK}>
-            X에 공유하기
-            <ArrowUpRight aria-hidden="true" />
-          </a>
-          <button type="button" onClick={() => void copy()} className={LINK}>
-            결과 복사하기
-            <Copy aria-hidden="true" />
-          </button>
-        </div>
-      ) : (
-        <div className="mt-4 grid grid-cols-2 gap-2">
-          {/* A link rather than window.open, so popup blockers leave it alone. */}
-          <a
-            href={xUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="flex items-center justify-between rounded-md bg-forest px-[15px] py-3 text-xs font-semibold text-white transition-colors hover:bg-forest-dark md:px-[18px] md:py-3.5 [&_svg]:size-4"
-          >
-            X에 공유하기
-            <ArrowUpRight aria-hidden="true" />
-          </a>
-          <Button
-            variant="primary"
-            onClick={() => void copy()}
-            className="border border-forest bg-card text-forest hover:bg-forest-soft"
-          >
-            결과 복사하기
-            <Copy aria-hidden="true" />
-          </Button>
-        </div>
-      )}
+      <div className="mt-4 grid grid-cols-2 gap-2">
+        {/* A link rather than window.open, so popup blockers leave it alone. */}
+        <a
+          href={xPostUrl(text)}
+          target="_blank"
+          rel="noreferrer"
+          className="flex items-center justify-between rounded-md bg-forest px-[15px] py-3 text-xs font-semibold text-white transition-colors hover:bg-forest-dark md:px-[18px] md:py-3.5 [&_svg]:size-4"
+        >
+          X에 공유하기
+          <ArrowUpRight aria-hidden="true" />
+        </a>
+        <Button
+          variant="primary"
+          onClick={() => void copy()}
+          className="border border-forest bg-card text-forest hover:bg-forest-soft"
+        >
+          결과 복사하기
+          <Copy aria-hidden="true" />
+        </Button>
+      </div>
       {message && (
         <p role="status" className="mt-[9px] text-[11px] text-[#5e725e]">
           {message}

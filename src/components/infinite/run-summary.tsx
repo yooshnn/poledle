@@ -1,7 +1,7 @@
-import { useEffect, useRef } from "react";
-import { RotateCcw } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { RotateCcw, Share2 } from "lucide-react";
 import { AnswerCandidates } from "@/components/result/answer-candidates";
-import { ShareButtons } from "@/components/result/share-button";
+import { ShareDialog } from "@/components/result/share-dialog";
 import { Button } from "@/components/ui/button";
 import { Eyebrow } from "@/components/ui/eyebrow";
 import type { Cell } from "@/domain/cell";
@@ -41,17 +41,29 @@ export function RunSummary({
   // Playing again is the usual next step, so Enter starts it.
   const retry = useRef<HTMLButtonElement>(null);
   useEffect(() => retry.current?.focus(), []);
+  const [sharing, setSharing] = useState(false);
 
   return (
     <main className={PAGE_BODY}>
       <EndCredits run={run} />
       <section
         aria-label="게임 결과"
-        className="relative z-10 w-full max-w-[510px] rounded-xl border border-[#dce0d2] bg-paper p-6 pb-5 shadow-[0_25px_90px_#10291b30] md:p-8 md:pb-6"
+        className="relative z-10 w-full max-w-[510px] rounded-xl border border-[#dce0d2] bg-paper p-6 shadow-[0_25px_90px_#10291b30] md:p-8"
       >
-        <Eyebrow>
-          {INFINITE_TITLE} · {label}
-        </Eyebrow>
+        <Button
+          variant="quiet"
+          onClick={() => setSharing(true)}
+          className="absolute top-4 right-4 min-h-9 rounded-md px-2.5 font-semibold hover:bg-forest-soft hover:text-forest md:top-6 md:right-6"
+        >
+          <Share2 aria-hidden="true" />
+          {/* Icon only on narrow phones, so the title line keeps its width. */}
+          <span className="max-xs:sr-only">공유하기</span>
+        </Button>
+        <div className="pr-10 xs:pr-24">
+          <Eyebrow>
+            {INFINITE_TITLE} · {label}
+          </Eyebrow>
+        </div>
         <h1 className="mt-3.5 mb-1.5 text-[27px] leading-[1.35] font-bold tracking-[-0.6px]">
           {score}문제 연속 정답
         </h1>
@@ -77,8 +89,12 @@ export function RunSummary({
             난이도 선택하기
           </Button>
         </div>
-        <ShareButtons text={infiniteShareText(run.difficulty, score, end)} variant="links" />
       </section>
+      <ShareDialog
+        open={sharing}
+        text={infiniteShareText(run.difficulty, score, end)}
+        onClose={() => setSharing(false)}
+      />
     </main>
   );
 }
