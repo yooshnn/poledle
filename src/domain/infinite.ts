@@ -79,6 +79,12 @@ export function roundBonus(
   return { ms, after, earned };
 }
 
+// m:ss, rounding up so a clock shows 0:00 only once time is out.
+export function formatClock(ms: number): string {
+  const seconds = Math.ceil(Math.max(0, ms) / 1000);
+  return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
+}
+
 // Adds earned time to what is left, never past the ceiling.
 export const addTime = (remainingMs: number, bonusMs: number) =>
   Math.min(MAX_TIME_MS, remainingMs + bonusMs);

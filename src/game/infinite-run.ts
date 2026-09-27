@@ -29,7 +29,8 @@ export type Round = { code: string; guesses: Cell[]; bonuses: RoundBonuses };
 export type RunClock = { remainingMs: number; runningSince: number | null };
 
 // An answer cell the player found, in the order found.
-export type FoundPlace = { code: string; cell: Cell };
+// remainingMs is the time that was left on the clock when it was found, before its bonus.
+export type FoundPlace = { code: string; cell: Cell; remainingMs: number };
 
 export type InfiniteRun = {
   difficulty: Difficulty;
@@ -191,11 +192,14 @@ export function guessInRun(
   const status = gameStatus(result.guesses, target);
   const hit = target.answers.find((answer) => sameRegion(answer, cell, target.precision));
   const bonus = roundBonus(run.round.code, cell, run.round.bonuses, !!hit, result.guesses.length);
-  const remainingMs = addTime(remainingAt(run.clock, now), bonus.ms);
+  const leftAtGuess = remainingAt(run.clock, now);
+  const remainingMs = addTime(leftAtGuess, bonus.ms);
   // The clock restarts from the new balance, or stays stopped until the next puzzle.
   const clock = { remainingMs, runningSince: hit ? null : now };
   const round = { ...run.round, guesses: result.guesses, bonuses: bonus.after };
-  const found = hit ? [...run.found, { code: round.code, cell: hit }] : run.found;
+  const found = hit
+    ? [...run.found, { code: round.code, cell: hit, remainingMs: leftAtGuess }]
+    : run.found;
   const next = withActiveRun(record, () => ({ ...run, round, found, clock }));
   return {
     ok: true,
@@ -269,7 +273,10 @@ const isFoundPlace = (value: unknown): value is FoundPlace =>
   isObject(value) &&
   typeof value.code === "string" &&
   isPoleNumber(value.code) &&
-  isValidCell(value.cell);
+  isValidCell(value.cell) &&
+  typeof value.remainingMs === "number" &&
+  value.remainingMs >= 0 &&
+  value.remainingMs <= MAX_TIME_MS;
 
 function parseRun(data: unknown): InfiniteRun | null {
   if (!isObject(data)) return null;

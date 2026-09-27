@@ -1,5 +1,6 @@
 import { useLayoutEffect, useRef } from "react";
 import { cellKey } from "@/domain/cell";
+import { formatClock } from "@/domain/infinite";
 import type { InfiniteRun } from "@/game/infinite-run";
 import { cn } from "@/lib/utils";
 import { coordinatesText } from "@/map/use-address";
@@ -59,7 +60,9 @@ export function EndCredits({ run, className }: { run: InfiniteRun; className?: s
             <strong className="text-lg leading-snug font-semibold text-[#3f5f48]">
               {run.regions[cellKey(place.cell)] ?? coordinatesText(place.cell)}
             </strong>
-            <span className="font-mono text-[11px] tracking-[2px]">{place.code}</span>
+            <span className="font-mono text-[11px] tracking-[2px]">
+              {place.code} · {formatClock(place.remainingMs)} 남음
+            </span>
           </div>
         ))}
       </div>

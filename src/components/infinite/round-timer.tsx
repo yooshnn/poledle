@@ -1,4 +1,5 @@
 import { useEffect, useEffectEvent, useState } from "react";
+import { formatClock } from "@/domain/infinite";
 import { cn } from "@/lib/utils";
 import { playEffect } from "@/sound";
 
@@ -36,7 +37,7 @@ export function RoundTimer({
   const running = deadline !== null;
   const remaining = running ? Math.max(0, deadline - now) : stoppedMs;
   const seconds = Math.ceil(remaining / 1000);
-  const text = `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
+  const text = formatClock(remaining);
 
   useEffect(() => {
     if (running && seconds > 0 && seconds <= TICKING_FROM) playEffect("tick");
