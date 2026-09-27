@@ -49,12 +49,14 @@ export function Rulers({ view }: { view: MapView }) {
   return (
     <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-[1] select-none">
       <div
+        data-testid="ruler-x"
         className="absolute inset-x-0 top-0 overflow-hidden border-b border-line bg-card/92"
         style={{ height: xHeight, color: DIGIT_COLORS.x }}
       >
         <RulerBands ruler={x} axis="x" />
       </div>
       <div
+        data-testid="ruler-y"
         className="absolute inset-y-0 left-0 overflow-hidden border-r border-line bg-card/92"
         style={{ width: yWidth, color: DIGIT_COLORS.y }}
       >
