@@ -69,7 +69,6 @@ test("an Infinite run: rounds, resuming, giving up and the end screen", async ({
 
     const summary = page.getByRole("region", { name: "게임 결과" });
     await expect(summary.getByText("1문제 연속 정답")).toBeVisible();
-    await expect(summary.getByText(/포기했어요/)).toBeVisible();
     await expect(page.getByTestId("end-credits")).toContainText("서울특별시 중구 명동");
 
     await summary.getByRole("button", { name: "공유하기" }).click();
@@ -96,6 +95,5 @@ test("a run ends when its three minutes run out", async ({ page }) => {
   await expect(page.getByRole("timer")).toBeVisible();
 
   await page.clock.fastForward("03:01");
-  await expect(page.getByText(/시간이 다 됐어요/)).toBeVisible();
   await expect(page.getByText("0문제 연속 정답")).toBeVisible();
 });

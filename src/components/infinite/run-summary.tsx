@@ -10,13 +10,7 @@ import { infiniteShareText } from "@/domain/share";
 import type { InfiniteRun } from "@/game/infinite-run";
 import { EndCredits } from "./end-credits";
 
-const END_TEXT: Record<RunEnd, string> = {
-  missed: "6번 모두 틀렸어요",
-  timeout: "시간이 다 됐어요",
-  "gave-up": "포기했어요",
-};
-
-// The end of a run: score, how it ended, where the last number was, and what next,
+// The end of a run: score, best score, where the last number was, and what next,
 // with the places found rolling past in the background.
 export function RunSummary({
   run,
@@ -69,9 +63,7 @@ export function RunSummary({
               <span className="text-[64px] leading-none md:text-[80px]">{score}</span>
               <span className="ml-1 text-[26px] md:text-[30px]">문제 연속 정답</span>
             </h1>
-            <p className="mt-3 text-[13px] text-[#6f7c6c]">
-              {END_TEXT[end]} · {record}
-            </p>
+            <p className="mt-3 text-[13px] text-[#6f7c6c]">{record}</p>
           </div>
 
           <div className="md:col-start-1">
