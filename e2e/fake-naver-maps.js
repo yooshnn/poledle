@@ -112,7 +112,10 @@
     }
     getProjection() {
       const scale = this.pixelsPerDegree();
-      return { fromCoordToOffset: (coord) => new Point(coord.lng() * scale, -coord.lat() * scale) };
+      return {
+        fromCoordToOffset: (coord) => new Point(coord.lng() * scale, -coord.lat() * scale),
+        fromOffsetToCoord: (offset) => new LatLng(-offset.y / scale, offset.x / scale),
+      };
     }
     getBounds() {
       const scale = this.pixelsPerDegree();
@@ -158,15 +161,29 @@
       this.setMap(options.map);
     }
   }
+  class Polyline extends Overlay {
+    constructor(options) {
+      super();
+      this.setMap(options.map);
+    }
+  }
   class Marker extends Overlay {
     constructor(options) {
       super();
       this.options = options;
+      this.visible = true;
       this.element = document.createElement("div");
       this.element.dataset.testid = "fake-marker";
       this.element.innerHTML = options.icon?.content ?? "";
       this.element.addEventListener("click", () => Event.trigger(this, "click"));
       this.setMap(options.map);
+    }
+    setVisible(visible) {
+      this.visible = visible;
+      this.element.hidden = !visible;
+    }
+    getVisible() {
+      return this.visible;
     }
     render() {
       if (this.map) this.map.layer.append(this.element);
@@ -210,6 +227,7 @@
       Point,
       Size,
       Polygon,
+      Polyline,
       Marker,
       InfoWindow,
       Event,

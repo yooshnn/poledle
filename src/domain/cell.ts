@@ -50,6 +50,13 @@ export function regionCorner(cell: Cell, size: number): Cell {
   };
 }
 
+// Whether the grid square of `size` metres at this corner is numbered by its own zone: each zone
+// only numbers its side of the 128°E boundary.
+export function inOwnZone(corner: Cell, size: number): boolean {
+  const { lng } = toLngLat({ x: corner.x + size / 2, y: corner.y + size / 2 }, corner.origin);
+  return originAt(lng) === corner.origin;
+}
+
 export function snapToCell(position: LngLat): Cell {
   const origin = originAt(position.lng);
   const base = gridBase(origin);

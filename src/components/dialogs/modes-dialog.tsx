@@ -7,7 +7,7 @@ import { Link, useRoute, type Route } from "@/lib/router";
 const MODES: { name: string; description: string; route: Route | null }[] = [
   { name: "Daily", description: "데일리 전봇들", route: "/" },
   { name: "Infinite", description: INFINITE_TITLE, route: "/infinite" },
-  { name: "Lesson", description: "번호 읽는 법 익히기", route: null },
+  { name: "Lesson", description: "번호 읽는 법 익히기", route: "/lesson" },
 ];
 
 const ITEM =

@@ -1,9 +1,8 @@
 /// <reference types="navermaps" />
 import { useEffect } from "react";
-import { BLOCK_SIZE, CELL_SIZE, SQUARE_SIZE, type Precision } from "@/domain/constants";
-import { cellCorners, regionCorner, snapToCell, type Cell } from "@/domain/cell";
+import { BLOCK_SIZE, CELL_SIZE, GRID_ZOOM, SQUARE_SIZE, type Precision } from "@/domain/constants";
+import { cellCorners, inOwnZone, regionCorner, snapToCell, type Cell } from "@/domain/cell";
 import { hintLabel } from "@/domain/game";
-import { toLngLat } from "@/domain/projection";
 import { cellPath, detach, safely, toLatLng, useNaverMap } from "@/map/naver-map";
 
 // Labels closer than this (in pixels) would overlap, so no hints are drawn at that zoom.
@@ -15,8 +14,8 @@ const LABEL_CLASS =
 // Grid squares get finer as wrong guesses accumulate, but only once zoomed in far enough,
 // and never finer than the grid level the puzzle asks for.
 function hintSize(guessCount: number, zoom: number, precision: Precision): Precision {
-  if (precision <= CELL_SIZE && guessCount >= 3 && zoom >= 18) return CELL_SIZE;
-  if (precision <= SQUARE_SIZE && guessCount >= 2 && zoom >= 15) return SQUARE_SIZE;
+  if (precision <= CELL_SIZE && guessCount >= 3 && zoom >= GRID_ZOOM.cell) return CELL_SIZE;
+  if (precision <= SQUARE_SIZE && guessCount >= 2 && zoom >= GRID_ZOOM.square) return SQUARE_SIZE;
   return BLOCK_SIZE;
 }
 
@@ -59,8 +58,7 @@ export function GridHints({
         for (let dy = -1; dy <= 1; dy++) {
           const cell = { ...square, x: square.x + dx * size, y: square.y + dy * size };
           // Skip squares that belong to the other TM zone.
-          const { lng } = toLngLat({ x: cell.x + size / 2, y: cell.y + size / 2 }, cell.origin);
-          if (lng < 128 !== (cell.origin === "middle")) continue;
+          if (!inOwnZone(cell, size)) continue;
 
           overlays.push(
             new naver.maps.Polygon({
