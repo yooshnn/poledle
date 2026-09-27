@@ -20,8 +20,8 @@ export function RegionTables() {
   return (
     <div className="grid gap-5">
       <p>
-        GeoGuessr가 쓰는 Google 스트리트뷰의 한국 지원 지역이에요. 원점, X·Y 블록 범위, 지역
-        가운데의 앞 4자리를 적었어요.
+        GeoGuessr가 쓰는 Google 스트리트뷰의 한국 지원 지역이다. 원점, X·Y 블록 범위, 지역 가운데의
+        앞 4자리를 적었다.
       </p>
       <div className="grid gap-2">
         <h3 className="text-[14px] font-semibold text-ink">주요 암기 지역</h3>
@@ -55,8 +55,8 @@ export function RegionTables() {
         </div>
       </details>
       <p className="text-[11px] text-muted">
-        범위는 시·군을 대략 감싼 사각형으로 계산했어요. 경계 근처에서는 한두 블록 차이가 날 수
-        있어요. 128°E에 걸친 지역은 원점마다 따로 적었어요.
+        범위는 시·군을 대략 감싼 사각형으로 계산했다. 경계 근처에서는 한두 블록 차이가 날 수 있다.
+        128°E에 걸친 지역은 원점마다 따로 적었다.
       </p>
     </div>
   );
