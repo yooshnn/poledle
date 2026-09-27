@@ -4,10 +4,13 @@ import { addGuess, gameStatus, type GameStatus, type Target } from "../domain/ga
 import {
   DIFFICULTY_ORDER,
   isDifficulty,
+  addTime,
   MAX_TIME_MS,
   noBonuses,
   pickCode,
+  roundBonus,
   START_TIME_MS,
+  type BonusKind,
   type Difficulty,
   type RoundBonuses,
   type RunEnd,
@@ -168,11 +171,11 @@ export const beatsBest = (before: InfiniteRecord, after: InfiniteRecord) =>
   DIFFICULTY_ORDER.some((difficulty) => after.best[difficulty] > before.best[difficulty]);
 
 export type RunGuessResult =
-  | { ok: true; record: InfiniteRecord; status: GameStatus }
+  | { ok: true; record: InfiniteRecord; status: GameStatus; earned: BonusKind[] }
   | { ok: false; reason: Notice };
 
-// A correct guess adds the answer cell it matched to the found places and stops the clock until
-// the next puzzle; a sixth miss ends the run.
+// A guess adds the time it earned (see roundBonus). A correct one adds the answer cell it matched
+// to the found places and stops the clock until the next puzzle; a sixth miss ends the run.
 export function guessInRun(
   record: InfiniteRecord,
   cell: Cell,
@@ -186,12 +189,20 @@ export function guessInRun(
   if (!result.ok) return result;
 
   const status = gameStatus(result.guesses, target);
-  const round = { ...run.round, guesses: result.guesses };
   const hit = target.answers.find((answer) => sameRegion(answer, cell, target.precision));
+  const bonus = roundBonus(run.round.code, cell, run.round.bonuses, !!hit, result.guesses.length);
+  const remainingMs = addTime(remainingAt(run.clock, now), bonus.ms);
+  // The clock restarts from the new balance, or stays stopped until the next puzzle.
+  const clock = { remainingMs, runningSince: hit ? null : now };
+  const round = { ...run.round, guesses: result.guesses, bonuses: bonus.after };
   const found = hit ? [...run.found, { code: round.code, cell: hit }] : run.found;
-  const clock = hit ? stopClock(run.clock, now) : run.clock;
   const next = withActiveRun(record, () => ({ ...run, round, found, clock }));
-  return { ok: true, record: status === "lost" ? endRun(next, "missed") : next, status };
+  return {
+    ok: true,
+    record: status === "lost" ? endRun(next, "missed") : next,
+    status,
+    earned: bonus.earned,
+  };
 }
 
 // Region names are stored on the run that asked for them, even if another run is open by now.
