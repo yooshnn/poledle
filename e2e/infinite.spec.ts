@@ -83,7 +83,7 @@ test("an Infinite run: rounds, resuming, giving up and the end screen", async ({
   });
 
   await test.step("the best score is listed when picking a difficulty again", async () => {
-    await page.getByRole("button", { name: "난이도 바꾸기" }).click();
+    await page.getByRole("button", { name: "난이도 선택하기" }).click();
     await expect(page.getByRole("button", { name: /^Normal/ })).toContainText("최고 1문제");
   });
 });

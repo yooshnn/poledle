@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { RotateCcw } from "lucide-react";
 import { AnswerCandidates } from "@/components/result/answer-candidates";
 import { ShareButtons } from "@/components/result/share-button";
@@ -37,6 +38,9 @@ export function RunSummary({
   const { label, precision } = DIFFICULTIES[run.difficulty];
   const score = run.found.length;
   const record = score > 0 && score >= best ? "최고 기록!" : `최고 ${best}문제`;
+  // Playing again is the usual next step, so Enter starts it.
+  const retry = useRef<HTMLButtonElement>(null);
+  useEffect(() => retry.current?.focus(), []);
 
   return (
     <main className={PAGE_BODY}>
@@ -60,16 +64,20 @@ export function RunSummary({
         </p>
         <AnswerCandidates answers={answers} precision={precision} knownRegions={run.regions} />
 
-        <ShareButtons text={infiniteShareText(run.difficulty, score, end)} />
-        <div className="mt-2 flex items-center justify-between">
-          <Button variant="quiet" onClick={onChangeDifficulty}>
-            난이도 바꾸기
-          </Button>
-          <Button variant="quiet" onClick={onRetry} className="font-bold text-forest">
-            다시 도전
+        <div className="mt-4 grid grid-cols-2 gap-2">
+          <Button ref={retry} variant="primary" onClick={onRetry}>
+            다시 도전하기
             <RotateCcw aria-hidden="true" />
           </Button>
+          <Button
+            variant="primary"
+            onClick={onChangeDifficulty}
+            className="border border-forest bg-card text-forest hover:bg-forest-soft"
+          >
+            난이도 선택하기
+          </Button>
         </div>
+        <ShareButtons text={infiniteShareText(run.difficulty, score, end)} variant="links" />
       </section>
     </main>
   );
