@@ -59,10 +59,10 @@ export function RunSummary({
           </Button>
         </div>
 
-        {/* Phones stack score, last puzzle, then credits; wider screens put the last puzzle
-            in its own column beside the score and credits. */}
-        <div className="mt-6 grid gap-8 md:mt-8 md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] md:grid-rows-[auto_1fr] md:gap-x-14 md:gap-y-8">
-          <div className="grid content-start gap-7">
+        {/* The result, the last puzzle and what next in one column; the credits roll in the
+            other on wide screens and under everything on phones. */}
+        <div className="mt-6 grid gap-8 md:mt-8 md:grid-cols-2 md:gap-14">
+          <div className="grid content-start gap-6">
             <div>
               <h1 className="font-bold tracking-[-1px] text-ink-strong">
                 <span className="text-[64px] leading-none md:text-[80px]">{score}</span>
@@ -72,6 +72,19 @@ export function RunSummary({
                 {END_TEXT[end]} · {record}
               </p>
             </div>
+
+            <div>
+              <p className="mb-2.5 text-[12px] text-[#7f8977]">
+                마지막 문제{" "}
+                <span className="font-mono font-semibold text-ink">{run.round.code}</span>
+              </p>
+              <AnswerCandidates
+                answers={answers}
+                precision={precision}
+                knownRegions={run.regions}
+              />
+            </div>
+
             <div className="grid grid-cols-2 gap-2">
               <Button ref={retry} variant="primary" onClick={onRetry}>
                 다시 도전하기
@@ -87,21 +100,7 @@ export function RunSummary({
             </div>
           </div>
 
-          <div className="md:col-start-2 md:row-span-2 md:row-start-1">
-            <p className="mb-2.5 text-[12px] text-[#7f8977]">
-              마지막 문제 <span className="font-mono font-semibold text-ink">{run.round.code}</span>
-            </p>
-            <AnswerCandidates
-              answers={answers}
-              precision={precision}
-              knownRegions={run.regions}
-              mapClassName="md:h-[340px]"
-            />
-          </div>
-
-          <div className="md:col-start-1 md:row-start-2">
-            <EndCredits run={run} />
-          </div>
+          <EndCredits run={run} className="h-64 md:h-auto" />
         </div>
       </section>
       <ShareDialog

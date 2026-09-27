@@ -1,6 +1,7 @@
 import { useLayoutEffect, useRef } from "react";
 import { cellKey } from "@/domain/cell";
 import type { InfiniteRun } from "@/game/infinite-run";
+import { cn } from "@/lib/utils";
 import { coordinatesText } from "@/map/use-address";
 
 // Pixels per second; the same pace whether a run found three places or three hundred.
@@ -8,7 +9,8 @@ const SPEED = 32;
 
 // The places found this run rolling up like film credits inside a panel of the end screen,
 // over and over. Names come from what the run already stored; nothing is fetched here.
-export function EndCredits({ run }: { run: InfiniteRun }) {
+// className sizes the panel.
+export function EndCredits({ run, className }: { run: InfiniteRun; className?: string }) {
   const frame = useRef<HTMLDivElement>(null);
   const roll = useRef<HTMLDivElement>(null);
 
@@ -36,7 +38,10 @@ export function EndCredits({ run }: { run: InfiniteRun }) {
       ref={frame}
       aria-hidden="true"
       data-testid="end-credits"
-      className="pointer-events-none relative h-64 overflow-hidden rounded-xl bg-forest-soft/60 select-none [container-type:size] [mask-image:linear-gradient(transparent,#000_18%,#000_82%,transparent)] md:h-72"
+      className={cn(
+        "pointer-events-none relative overflow-hidden rounded-xl bg-forest-soft/60 select-none [container-type:size] [mask-image:linear-gradient(transparent,#000_12%,#000_88%,transparent)]",
+        className,
+      )}
     >
       <div
         ref={roll}

@@ -14,13 +14,11 @@ export function AnswerCandidates({
   precision,
   initialIndex = 0,
   knownRegions = NO_REGIONS,
-  mapClassName,
 }: {
   answers: Cell[];
   precision: Precision;
   initialIndex?: number;
   knownRegions?: Record<string, string>;
-  mapClassName?: string;
 }) {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const activeIndex = selectedIndex ?? initialIndex;
@@ -44,7 +42,7 @@ export function AnswerCandidates({
 
       {active && (
         <>
-          <AnswerMap cell={active} precision={precision} className={mapClassName} />
+          <AnswerMap cell={active} precision={precision} />
           <AnswerDetail cell={active} knownRegion={knownRegions[cellKey(active)]} />
         </>
       )}
