@@ -5,15 +5,18 @@ import { cn } from "@/lib/utils";
 
 const HIDDEN = "invisible translate-y-7 opacity-0 pointer-events-none";
 
-// Floating control over the map: a prompt until a cell is selected, then the submit button,
-// and once the puzzle is over whatever the mode offers next (if anything).
+// Floating control over the map: a prompt until a cell is selected, then the submit button
+// (disabled, and saying so, when the selection cannot be played), and once the puzzle is over
+// whatever the mode offers next (if anything).
 export function GuessAction({
   hasSelection,
+  blocked = false,
   done,
   onSubmit,
   doneAction,
 }: {
   hasSelection: boolean;
+  blocked?: boolean;
   done: boolean;
   onSubmit: () => void;
   doneAction?: ReactNode;
@@ -36,16 +39,25 @@ export function GuessAction({
       </span>
       <Button
         variant="primary"
-        disabled={!showButton}
+        disabled={!showButton || blocked}
         onClick={onSubmit}
         className={cn(
           layer,
-          "min-h-12 w-40 animate-submit-pulse gap-3 bg-copper px-[18px] py-3 text-sm font-bold hover:bg-copper-dark [&_svg]:size-[18px]",
+          "min-h-12 w-40 gap-3 px-[18px] py-3 text-sm font-bold [&_svg]:size-[18px]",
+          blocked
+            ? "cursor-not-allowed justify-center disabled:text-[#6b7266]"
+            : "animate-submit-pulse bg-copper hover:bg-copper-dark",
           !showButton && HIDDEN,
         )}
       >
-        제출하기
-        <ArrowUpRight aria-hidden="true" />
+        {blocked ? (
+          "선택할 수 없는 곳"
+        ) : (
+          <>
+            제출하기
+            <ArrowUpRight aria-hidden="true" />
+          </>
+        )}
       </Button>
       {done && doneAction && <div className={layer}>{doneAction}</div>}
     </div>

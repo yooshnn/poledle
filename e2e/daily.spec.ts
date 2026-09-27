@@ -1,4 +1,4 @@
-import type { Cell } from "../src/domain/cell";
+import { snapToCell, type Cell } from "../src/domain/cell";
 import { expect, test } from "./fixtures";
 
 // A cell `blocks` 2 km blocks east of the answer: always a wrong guess.
@@ -20,6 +20,13 @@ test("a lost daily game: hints, guess details, hard mode, reload and sharing", a
     expect(await page.evaluate(() => window.fakeNaverMaps.zoom())).toBeGreaterThan(7);
     await expect(page.getByText("지도를 확대해 위치를 선택해주세요.")).toBeVisible();
     await expect(page.getByRole("button", { name: "제출하기" })).toBeHidden();
+  });
+
+  await test.step("the open sea cannot be submitted", async () => {
+    await player.zoomTo(16);
+    await player.clickMap(snapToCell({ lng: 125, lat: 35 }));
+    await expect(page.getByRole("button", { name: "선택할 수 없는 곳" })).toBeDisabled();
+    await expect(page.getByText("선택할 수 없는 곳입니다.")).toBeVisible();
   });
 
   await test.step("a wrong guess fills a slot and reveals grid hints", async () => {

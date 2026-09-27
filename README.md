@@ -21,6 +21,6 @@ pnpm dev                     # http://localhost:5173
 ## 데이터 출처
 
 - 출제 번호: 한국전력공사 공개 전주전산화번호 데이터
-- 육지 경계: Natural Earth 1:10m(퍼블릭 도메인)
+- 육지 판정: 통계청 SGIS 행정구역 경계(공공누리 제1유형), [vuski/admdongkor](https://github.com/vuski/admdongkor) 가공본(CC BY 4.0)
 - 지도·주소: NAVER Cloud Platform Maps
 - 글꼴: Paperlogy(OFL)
