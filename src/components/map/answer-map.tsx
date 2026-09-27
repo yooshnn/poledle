@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import type { Cell } from "@/domain/cell";
 import type { Precision } from "@/domain/constants";
+import { cn } from "@/lib/utils";
 import { NaverMap, cellLatLng } from "@/map/naver-map";
 import { CellMarker } from "@/map/overlays";
 import { AnswerLayer } from "./answer-layer";
@@ -15,17 +16,26 @@ const FRAME =
 const ANSWER_PIN =
   '<div class="box-border grid size-8 place-items-center rounded-full border-2 border-white bg-[#277661] text-white shadow-[0_0_0_2px_#277661,0_3px_8px_#26382d80]"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></div>';
 
-// Small map in the result dialog showing one answer and its grid square.
-export function AnswerMap({ cell, precision }: { cell: Cell; precision: Precision }) {
+// Small map showing one answer and its grid square. className adjusts the frame (its height).
+export function AnswerMap({
+  cell,
+  precision,
+  className,
+}: {
+  cell: Cell;
+  precision: Precision;
+  className?: string | undefined;
+}) {
   const status = useNaverMaps();
   const cells = useMemo(() => [cell], [cell]);
-  if (status !== "ready") return <MapStatus status={status} className={FRAME} />;
+  const frame = cn(FRAME, className);
+  if (status !== "ready") return <MapStatus status={status} className={frame} />;
 
   return (
     <NaverMap
       label="선택한 정답 구획 지도"
       options={{ center: cellLatLng(cell), zoom: ZOOM[precision].overview, scrollWheel: false }}
-      className={FRAME}
+      className={frame}
     >
       <ZoomControls />
       <AnswerLayer cells={cells} precision={precision} single />
