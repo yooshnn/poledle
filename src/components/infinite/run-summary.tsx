@@ -47,7 +47,7 @@ export function RunSummary({
       <EndCredits run={run} />
       <section
         aria-label="게임 결과"
-        className="relative z-10 w-full max-w-[510px] rounded-xl border border-[#dce0d2] bg-paper p-6 shadow-[0_25px_90px_#10291b30] md:p-8"
+        className="relative z-10 w-full max-w-[510px] rounded-xl border border-[#dce0d2] bg-paper p-6 pb-5 shadow-[0_25px_90px_#10291b30] md:p-8 md:pb-6"
       >
         <Eyebrow>
           {INFINITE_TITLE} · {label}

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { xPostUrl } from "@/domain/share";
 
 const LINK =
-  "inline-flex min-h-11 items-center gap-1.5 px-1 text-xs font-semibold text-[#55635b] transition-colors hover:text-forest md:text-[13px] [&_svg]:size-4";
+  "inline-flex min-h-10 items-center gap-1.5 rounded-md px-2.5 text-xs font-semibold text-[#48604f] transition-colors hover:bg-[#dde9da] hover:text-forest md:text-[13px] [&_svg]:size-4";
 
 // The two ways to share a spoiler-free result: a post on X with the text filled in, or the
 // clipboard (falling back to a selectable text box when clipboard access is denied).
@@ -34,7 +34,7 @@ export function ShareButtons({
   return (
     <>
       {variant === "links" ? (
-        <div className="mt-1 flex justify-end gap-3">
+        <div className="mt-3 ml-auto flex w-fit gap-0.5 rounded-lg bg-forest-soft p-1">
           <a href={xUrl} target="_blank" rel="noreferrer" className={LINK}>
             X에 공유하기
             <ArrowUpRight aria-hidden="true" />
