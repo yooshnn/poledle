@@ -14,6 +14,7 @@ export function LessonPage() {
         right={<LessonGuide />}
         separatorLabel="지도 크기 조절"
         mobileTabs={TABS}
+        defaultMobileTab="right"
         defaultSplit={55}
       />
     </PageShell>

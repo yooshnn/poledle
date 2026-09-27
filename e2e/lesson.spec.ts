@@ -52,13 +52,13 @@ test("the lesson: rulers, the code under the crosshair, region tables and mobile
     await expect(seoul).toContainText("9926");
   });
 
-  await test.step("on a phone the map and the guide are tabs", async () => {
+  await test.step("on a phone the guide and the map are tabs, the guide first", async () => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await expect(page.getByTestId("lesson-code")).toBeVisible();
-    await page.getByRole("tab", { name: "문서" }).click();
+    await page.reload();
     await expect(page.getByRole("heading", { name: "번호 읽는 법" })).toBeVisible();
     await expect(page.getByTestId("lesson-code")).toBeHidden();
     await page.getByRole("tab", { name: "지도" }).click();
-    await expect(page.getByTestId("lesson-code")).toHaveText(/^9926/);
+    await expect(page.getByTestId("lesson-code")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "번호 읽는 법" })).toBeHidden();
   });
 });

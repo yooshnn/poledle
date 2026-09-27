@@ -20,17 +20,19 @@ export function SplitLayout({
   right,
   separatorLabel = "풍경 크기 조절",
   mobileTabs,
+  defaultMobileTab = "left",
   defaultSplit = DEFAULT_SPLIT,
 }: {
   left: ReactNode;
   right: ReactNode;
   separatorLabel?: string;
   mobileTabs?: Record<Pane, string>;
+  defaultMobileTab?: Pane;
   defaultSplit?: number;
 }) {
   const container = useRef<HTMLElement>(null);
   const [split, setSplit] = useState(defaultSplit);
-  const [tab, setTab] = useState<Pane>("left");
+  const [tab, setTab] = useState<Pane>(defaultMobileTab);
 
   function dragTo(clientX: number) {
     const rect = container.current?.getBoundingClientRect();
