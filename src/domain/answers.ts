@@ -1,7 +1,7 @@
 import { landMask } from "../data/land-mask";
-import { REPEAT_SIZE } from "./constants";
+import { REPEAT_SIZE, type Precision } from "./constants";
 import { cellCenter, type Cell } from "./cell";
-import { hasLand } from "./land-mask";
+import { hasLand, hasLandIn } from "./land-mask";
 import { parsePoleNumber } from "./pole-number";
 import { gridBase, originAt, type Origin } from "./projection";
 
@@ -28,4 +28,10 @@ export function answerCells(code: string): Cell[] {
     }
   }
   return cells;
+}
+
+// Whether a guess here could ever be right: answers only lie on land, so a pick whose judged
+// square (at the puzzle's precision) has no land can never match one.
+export function isPlayable(cell: Cell, precision: Precision): boolean {
+  return hasLandIn(landMask, cell, precision);
 }

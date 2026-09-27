@@ -1,10 +1,11 @@
 import type { ReactNode } from "react";
-import type { Notice, PuzzleGame } from "@/game/puzzle-game";
+import { selectionBlocked, type Notice, type PuzzleGame } from "@/game/puzzle-game";
 import { AttemptTrack } from "./attempt-track";
 import { GuessAction } from "./guess-action";
 
 const NOTICE_TEXT: Record<Notice, string> = {
   "already-guessed": "이미 추측한 격자입니다. 다른 곳을 골라 주세요.",
+  unplayable: "선택할 수 없는 곳입니다. 다른 곳을 골라 주세요.",
   "game-over": "이 문제는 끝났습니다.",
   "storage-unavailable": "브라우저 저장소를 사용할 수 없어 새로고침하면 진행이 사라질 수 있어요.",
 };
@@ -30,6 +31,8 @@ export function PuzzlePanel({
   onShowGuess: (index: number) => void;
 }) {
   const done = game.status !== "playing";
+  const blocked = !done && selectionBlocked(game);
+  const notice = blocked ? "unplayable" : game.notice;
 
   return (
     <section className="relative flex min-w-0 flex-col overflow-hidden bg-paper">
@@ -38,17 +41,18 @@ export function PuzzlePanel({
         <AttemptTrack guesses={game.guesses} done={done} onShowGuess={onShowGuess} />
         {toolbar && <div className="ml-auto">{toolbar}</div>}
       </div>
-      {game.notice && (
+      {notice && (
         <p
           role="status"
           className="mx-5 mb-2 text-[10px] text-warn md:mx-[30px] md:mb-2.5 md:text-[11px]"
         >
-          {NOTICE_TEXT[game.notice]}
+          {NOTICE_TEXT[notice]}
         </p>
       )}
       <div className="relative min-h-0 flex-1">{map}</div>
       <GuessAction
         hasSelection={game.selected !== null}
+        blocked={blocked}
         done={done}
         onSubmit={onSubmit}
         doneAction={doneAction}

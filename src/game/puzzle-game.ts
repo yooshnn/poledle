@@ -1,3 +1,4 @@
+import { isPlayable } from "@/domain/answers";
 import type { Cell } from "@/domain/cell";
 import type { Precision } from "@/domain/constants";
 import {
@@ -9,7 +10,7 @@ import {
 } from "@/domain/game";
 
 // Why the last action did not go through; the UI turns it into a message.
-export type Notice = "already-guessed" | "game-over" | "storage-unavailable";
+export type Notice = "already-guessed" | "unplayable" | "game-over" | "storage-unavailable";
 
 export type GuessFeedback = { cell: Cell; correct: boolean; direction: Direction | null };
 
@@ -37,4 +38,9 @@ export function describeGuesses(guesses: Cell[], target: Target): GuessFeedback[
       direction: correct ? null : directionToNearestAnswer(cell, target.answers),
     };
   });
+}
+
+// A selection that can never be right (sea, or outside South Korea) cannot be submitted.
+export function selectionBlocked({ selected, precision }: PuzzleGame): boolean {
+  return selected !== null && !isPlayable(selected, precision);
 }

@@ -1,3 +1,4 @@
+import { isPlayable } from "./answers";
 import { BLOCK_SIZE, MAX_GUESSES, type Precision } from "./constants";
 import { cellCenter, sameRegion, type Cell } from "./cell";
 import { locationCode } from "./pole-number";
@@ -20,10 +21,11 @@ export function isCorrect(guess: Cell, { answers, precision }: Target): boolean 
 
 export type GuessResult =
   | { ok: true; guesses: Cell[] }
-  | { ok: false; reason: "game-over" | "already-guessed" };
+  | { ok: false; reason: "game-over" | "already-guessed" | "unplayable" };
 
 export function addGuess(guesses: Cell[], cell: Cell, target: Target): GuessResult {
   if (gameStatus(guesses, target) !== "playing") return { ok: false, reason: "game-over" };
+  if (!isPlayable(cell, target.precision)) return { ok: false, reason: "unplayable" };
   // Two picks in the same grid square are the same guess.
   if (guesses.some((guess) => sameRegion(guess, cell, target.precision)))
     return { ok: false, reason: "already-guessed" };

@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { cellKey, regionCorner } from "@/domain/cell";
-import type { PuzzleGame } from "@/game/puzzle-game";
+import { selectionBlocked, type PuzzleGame } from "@/game/puzzle-game";
 import { NaverMap } from "@/map/naver-map";
 import { CellMarker, CellPolygon } from "@/map/overlays";
 import { AnswerLayer } from "./answer-layer";
@@ -13,8 +13,12 @@ import { ZoomControls } from "./zoom-controls";
 
 const FRAME = "absolute inset-0 bg-map";
 const SELECTED_STYLE = { color: "#d0793c", weight: 3, fillOpacity: 0.3 };
+// A selection that cannot be submitted is shown greyed out.
+const BLOCKED_STYLE = { color: "#8a9184", weight: 2, fillOpacity: 0.2 };
 const SELECTION_PIN =
   '<div class="box-border grid size-7 place-items-center rounded-full border-[3px] border-white bg-[#d0793c] shadow-[0_0_0_2px_#9b5029,0_2px_8px_#26382d80]"><span class="size-1.5 rounded-full bg-white"></span></div>';
+const BLOCKED_PIN =
+  '<div class="box-border grid size-7 place-items-center rounded-full border-[3px] border-white bg-[#8a9184] shadow-[0_0_0_2px_#6b7266,0_2px_8px_#26382d80]"><span class="size-1.5 rounded-full bg-white"></span></div>';
 
 // Whole-country map: pick cells, see past guesses and hints, and the answers once finished.
 export function GameMap({
@@ -29,6 +33,7 @@ export function GameMap({
   const status = useNaverMaps();
   const { precision } = game;
   const done = game.status !== "playing";
+  const blocked = selectionBlocked(game);
   const guessCells = useMemo(() => game.guesses.map((guess) => guess.cell), [game.guesses]);
 
   if (status !== "ready") return <MapStatus status={status} className={FRAME} />;
@@ -58,9 +63,14 @@ export function GameMap({
           <CellPolygon
             cell={regionCorner(game.selected, precision)}
             size={precision}
-            style={SELECTED_STYLE}
+            style={blocked ? BLOCKED_STYLE : SELECTED_STYLE}
           />
-          <CellMarker cell={game.selected} html={SELECTION_PIN} size={28} zIndex={200} />
+          <CellMarker
+            cell={game.selected}
+            html={blocked ? BLOCKED_PIN : SELECTION_PIN}
+            size={28}
+            zIndex={200}
+          />
         </>
       )}
       {done && <AnswerLayer cells={game.revealedAnswers} precision={precision} />}

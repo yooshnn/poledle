@@ -56,6 +56,19 @@ export function hasLand(zones: readonly LandZone[], cell: Cell): boolean {
   return ((zone.squares.get(block) ?? 0) & (1 << bit)) !== 0;
 }
 
+// Whether the grid square of the given size around the cell has any land: the 500 m square
+// for 50 m and 500 m play, the whole 2 km block for 2 km play.
+export function hasLandIn(zones: readonly LandZone[], cell: Cell, size: number): boolean {
+  if (size < BLOCK_SIZE) return hasLand(zones, cell);
+  const zone = zones.find((candidate) => candidate.origin === cell.origin);
+  if (!zone) return false;
+  const offset = gridOffset(cell);
+  const column = Math.floor(offset.x / BLOCK_SIZE) - zone.west;
+  const row = Math.floor(offset.y / BLOCK_SIZE) - zone.south;
+  if (column < 0 || row < 0 || column >= zone.columns || row >= zone.rows) return false;
+  return zone.states[row * zone.columns + column] !== SEA;
+}
+
 export function encodeLandMask(zones: readonly LandZone[]): Uint8Array {
   const parts: Uint8Array[] = [
     new TextEncoder().encode(MAGIC),
