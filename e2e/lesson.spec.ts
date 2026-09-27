@@ -30,7 +30,8 @@ test("the lesson: rulers, the code under the crosshair, region tables and mobile
     await page.evaluate(({ lat, lng }) => window.fakeNaverMaps.panTo(lat, lng), CITY_HALL);
     await player.zoomTo(12);
     await expect(page.getByTestId("lesson-code")).toHaveText(/^9926[A-Z]\d\d$/);
-    await expect(page.getByTestId("lesson-place")).toHaveText("서울특별시 · 중구");
+    // The lesson never asks for place names.
+    expect(await page.evaluate(() => window.fakeNaverMaps.geocodeCount())).toBe(0);
   });
 
   await test.step("zooming in adds letters and then digits to the rulers", async () => {
