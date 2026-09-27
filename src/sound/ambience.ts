@@ -1,21 +1,27 @@
 import { getSettings, subscribeSettings } from "@/game/settings";
+import { playDrumStep } from "./drums";
 import { onAudioReady, runningEngine, type AudioEngine } from "./engine";
+import { createMelody, playMelodyStep } from "./melody";
 
 // Generative background sound, synthesized live so it never repeats exactly: slow pad chords,
-// wind moving through a filter, a faint power-line hum and the odd high note. It plays while
-// the setting is on, audio is unlocked and the tab is visible.
+// a small drum kit and a sparse marimba line on a slow beat, over wind moving through a
+// filter, a faint power-line hum and the odd high note. It plays while the setting is on,
+// audio is unlocked and the tab is visible.
 
 const SESSION_VOLUME = 0.6;
 const FADE_IN = 3;
 const FADE_OUT = 1.5;
 
-// A new chord every CHORD_EVERY seconds, each lasting CHORD_LENGTH, so they overlap.
-const CHORD_EVERY = 8;
-const CHORD_LENGTH = 11;
-const PAD_VOICE_VOLUME = 0.02;
+const TEMPO = 65;
+const STEP = 60 / TEMPO / 4;
+const STEPS_PER_BAR = 16;
+// A new chord every CHORD_BARS bars, held CHORD_OVERLAP seconds into the next so they overlap.
+const CHORD_BARS = 2;
+const CHORD_OVERLAP = 3;
+const PAD_VOICE_VOLUME = 0.016;
 
 // Warm, unresolved chords (Hz) around C major; the next one is picked at random.
-const CHORDS = [
+const CHORDS: readonly (readonly number[])[] = [
   [174.61, 220, 261.63, 329.63], // Fmaj7
   [130.81, 196, 246.94, 329.63], // Cmaj7
   [110, 220, 261.63, 392], // Am7
@@ -51,17 +57,28 @@ function startSession({ context, ambience }: AudioEngine): Session {
   output.connect(ambience);
   output.gain.linearRampToValueAtTime(SESSION_VOLUME, context.currentTime + FADE_IN);
 
-  const sources = [...startWind(context, output), ...startHum(context, output)];
+  const noise = noiseBuffer(context);
+  const sources = [...startWind(context, output, noise), ...startHum(context, output)];
+  const kit = { context, output, noise };
+  const melody = createMelody();
 
-  let nextChordAt = context.currentTime + 0.5;
+  let step = 0;
+  let nextStepAt = context.currentTime + 0.5;
   let nextSparkleAt = context.currentTime + randomBetween(6, 12);
   let chord = randomItem(CHORDS);
   const schedule = () => {
     const horizon = context.currentTime + 1;
-    while (nextChordAt < horizon) {
-      playChord(context, output, chord, nextChordAt);
-      chord = randomItem(CHORDS.filter((candidate) => candidate !== chord));
-      nextChordAt += CHORD_EVERY;
+    while (nextStepAt < horizon) {
+      const bar = Math.floor(step / STEPS_PER_BAR);
+      const stepInBar = step % STEPS_PER_BAR;
+      if (stepInBar === 0 && bar % CHORD_BARS === 0) {
+        if (bar > 0) chord = randomItem(CHORDS.filter((candidate) => candidate !== chord));
+        playChord(context, output, chord, nextStepAt);
+      }
+      playDrumStep(kit, bar, stepInBar, nextStepAt);
+      playMelodyStep(melody, context, output, bar, stepInBar, chord, nextStepAt);
+      step++;
+      nextStepAt += STEP;
     }
     if (nextSparkleAt < horizon) {
       playSparkle(context, output, nextSparkleAt);
@@ -89,18 +106,25 @@ function startSession({ context, ambience }: AudioEngine): Session {
   };
 }
 
-// White noise through a band-pass filter whose centre drifts slowly, like gusts of wind.
-function startWind(context: AudioContext, output: AudioNode): AudioScheduledSourceNode[] {
+function noiseBuffer(context: AudioContext): AudioBuffer {
   const length = context.sampleRate * 4;
   const buffer = new AudioBuffer({ length, sampleRate: context.sampleRate });
   const samples = buffer.getChannelData(0);
   for (let i = 0; i < length; i++) samples[i] = Math.random() * 2 - 1;
+  return buffer;
+}
 
+// White noise through a band-pass filter whose centre drifts slowly, like gusts of wind.
+function startWind(
+  context: AudioContext,
+  output: AudioNode,
+  buffer: AudioBuffer,
+): AudioScheduledSourceNode[] {
   const noise = new AudioBufferSourceNode(context, { buffer, loop: true });
   const filter = new BiquadFilterNode(context, { type: "bandpass", frequency: 450, Q: 0.7 });
   const drift = new OscillatorNode(context, { frequency: 0.06 });
   const driftDepth = new GainNode(context, { gain: 250 });
-  const level = new GainNode(context, { gain: 0.07 });
+  const level = new GainNode(context, { gain: 0.045 });
 
   drift.connect(driftDepth).connect(filter.frequency);
   noise.connect(filter).connect(level).connect(output);
@@ -125,8 +149,13 @@ function startHum(context: AudioContext, output: AudioNode): AudioScheduledSourc
 
 // Each chord tone is two slightly detuned oscillators under a low-pass filter, swelling in
 // and out slowly.
-function playChord(context: AudioContext, output: AudioNode, chord: number[], start: number) {
-  const end = start + CHORD_LENGTH;
+function playChord(
+  context: AudioContext,
+  output: AudioNode,
+  chord: readonly number[],
+  start: number,
+) {
+  const end = start + CHORD_BARS * STEPS_PER_BAR * STEP + CHORD_OVERLAP;
   const filter = new BiquadFilterNode(context, { type: "lowpass", frequency: 900, Q: 0.3 });
   const envelope = new GainNode(context, { gain: 0 });
   envelope.gain.setValueAtTime(0, start);
@@ -163,7 +192,7 @@ function playSparkle(context: AudioContext, output: AudioNode, start: number) {
 
 const randomBetween = (min: number, max: number) => min + Math.random() * (max - min);
 
-function randomItem<T>(items: T[]): T {
+function randomItem<T>(items: readonly T[]): T {
   const item = items[Math.floor(Math.random() * items.length)];
   if (item === undefined) throw new Error("randomItem needs at least one item");
   return item;
